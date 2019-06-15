@@ -27,6 +27,7 @@
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
+#include <SPI.h>
 
 // For the Adafruit shield, these are the default.
 #define TFT_CLK 27
@@ -52,13 +53,12 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 void setup() {
   Serial.begin(9600);
+  SPI.begin();
   Serial.println("ILI9341 Test!"); 
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
- 
-  tft.begin();
 
   // read diagnostics (optional but can help debug problems)
   uint8_t x = tft.readcommand8(ILI9341_RDMODE);
