@@ -90,7 +90,7 @@ void ILI9341_drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
 void ILI9341_drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
 void ILI9341_fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
 void ILI9341_setRotation(uint8_t r);
-void ILI9341_invertDisplay(unsigned char i);
+void ILI9341_invertDisplay(char i);
 void ILI9341_displaySprite(struct Sprite* sprite, uint8_t clear);
 uint16_t ILI9341_color565(uint8_t r, uint8_t g, uint8_t b);
 
@@ -105,10 +105,9 @@ uint8_t spiwrite(uint8_t data);
 void writecommand(uint8_t c);
 void writedata(uint8_t d);
 uint8_t spiread(void);
-uint16_t GetPaletteColor(unsigned char index);
+uint16_t GetPaletteColor(char index);
 void setBgColor(uint16_t inColor);
 
-uint8_t  tabcolor;
 
 #define TFT_CLK 27
 #define TFT_MISO 25

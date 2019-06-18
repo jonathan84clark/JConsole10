@@ -21,8 +21,6 @@
 #include <SPI.h>
 #include "ILI9341_SPI.h"
 
-#define ARDUINO 1
-
 uint16_t bg_color = COLOR_GREEN;
 
 uint16_t palette[18] = {COLOR_BLUE, COLOR_RED, COLOR_GOLDENROD, COLOR_CYAN, COLOR_MAGENTA, COLOR_YELLOW,
@@ -45,12 +43,14 @@ void setBgColor(uint16_t inColor)
 * DESCRIPTION: Returns a static color from the color
 * palette (for random purposes)
 **************************************************/
-uint16_t GetPaletteColor(unsigned char index)
+uint16_t GetPaletteColor(char index)
 {
+  /*
     if (index < NUM_COLORS)
     {
         return palette[index];
     }
+    */
     return COLOR_WHITE;
 }
 
@@ -287,12 +287,12 @@ void ILI9341_drawPixel(int16_t x, int16_t y, uint16_t color)
   if((x < 0) ||(x >= ILI9341WIDTH) || (y < 0) || (y >= ILI9341HEIGHT)) return;
 
   setAddrWindow(x,y,x+1,y+1);
-  SET_DC;
-  CLEAR_CS;
+  digitalWrite(TFT_DC, HIGH);
+  digitalWrite(TFT_CS, LOW);
 
   spiwrite(color >> 8);
   spiwrite(color);
-  SET_CS;
+  digitalWrite(TFT_CS, HIGH);
 
 }
 
@@ -312,15 +312,15 @@ void ILI9341_drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
 
   uint8_t hi = color >> 8, lo = color;
 
-  SET_DC;
-  CLEAR_CS;
+  digitalWrite(TFT_DC, HIGH);
+  digitalWrite(TFT_CS, LOW);
 
   while (h--)
   {
     spiwrite(hi);
     spiwrite(lo);
   }
-  SET_CS;
+  digitalWrite(TFT_CS, HIGH);
 }
 
 /**************************************************
@@ -335,14 +335,14 @@ void ILI9341_drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color)
   setAddrWindow(x, y, x+w-1, y);
 
   uint8_t hi = color >> 8, lo = color;
-  SET_DC;
-  CLEAR_CS;
+  digitalWrite(TFT_DC, HIGH);
+  digitalWrite(TFT_CS, LOW);
   while (w--)
   {
     spiwrite(hi);
     spiwrite(lo);
   }
-  SET_CS;
+  digitalWrite(TFT_CS, HIGH);
 }
 
 void ILI9341_fillScreen(uint16_t color)
@@ -365,8 +365,8 @@ void ILI9341_fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color
 
   uint8_t hi = color >> 8, lo = color;
 
-  SET_DC;
-  CLEAR_CS;
+  digitalWrite(TFT_DC, HIGH);
+  digitalWrite(TFT_CS, LOW);
 
   for(y=h; y>0; y--)
   {
@@ -376,15 +376,17 @@ void ILI9341_fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color
     	spiwrite_non_blocking(lo);
     }
   }
-  SET_CS;
+  digitalWrite(TFT_CS, HIGH);
 }
 
 /**************************************************
 * DISPLAY PIXEL ARRAY REVERSE
 * DESCRIPTION: Prints a 2D array of pixel to the LCD
 **************************************************/
-void ILI9341_displaySprite(struct Sprite* sprite, uint8_t clear)
-{
+//void ILI9341_displaySprite(struct Sprite* sprite, uint8_t clear)
+//{
+
+  /*
   char hi;
   char lo;
   int i;
@@ -398,8 +400,8 @@ void ILI9341_displaySprite(struct Sprite* sprite, uint8_t clear)
 
   setAddrWindow(sprite->y_pos, sprite->x_pos, sprite->y_pos+h, sprite->x_pos+w-1);
 
-  SET_DC;
-  CLEAR_CS;
+  digitalWrite(TFT_DC, HIGH);
+  digitalWrite(TFT_CS, LOW);
 
   if (sprite->direction == Right)
   {
@@ -445,8 +447,9 @@ void ILI9341_displaySprite(struct Sprite* sprite, uint8_t clear)
         }
      }
   }
-  SET_CS;
-}
+  digitalWrite(TFT_CS, HIGH);
+  */
+//}
 
 /**************************************************
 * COLOR 565
@@ -494,7 +497,7 @@ void ILI9341_setRotation(uint8_t m)
 * INVERT DISPLAY
 * DESCRIPTION: Invert the colors on the LCD
 **************************************************/
-void ILI9341_invertDisplay(unsigned char i)
+void ILI9341_invertDisplay(char i)
 {
   writecommand(i ? ILI9341_INVON : ILI9341_INVOFF);
 }
@@ -508,13 +511,14 @@ void ILI9341_invertDisplay(unsigned char i)
 **************************************************/
 uint8_t spiread(void)
 {
-   while (!(UCB0IFG&UCTXIFG));               // USCI_A0 TX buffer ready?
-	        UCB0TXBUF = 0xFF;                     // Dummy write
+   //while (!(UCB0IFG&UCTXIFG));               // USCI_A0 TX buffer ready?
+	 //       UCB0TXBUF = 0xFF;                     // Dummy write
 
    //May need delay here
-   while  (!(UCB0IFG&UCRXIFG));
+   //while  (!(UCB0IFG&UCRXIFG));
 
-   return UCB0RXBUF;
+   //return UCB0RXBUF;
+   return 0;
 }
 
 /**************************************************
@@ -523,11 +527,11 @@ uint8_t spiread(void)
 **************************************************/
 uint8_t ILI9341_readdata(void)
 {
-   SET_DC;
-   CLEAR_CS;
-   uint8_t r = spiread();
-   SET_CS;
-   return r;
+   //SET_DC;
+   //CLEAR_CS;
+   //uint8_t r = spiread();
+   //SET_CS;
+   return 0;
 }
 
 /**************************************************
@@ -536,20 +540,20 @@ uint8_t ILI9341_readdata(void)
 **************************************************/
 uint8_t ILI9341_readcommand8(uint8_t c, uint8_t index)
 {
-   CLEAR_DC;
-   CLEAR_CS;
+   digitalWrite(TFT_DC, LOW);
+   digitalWrite(TFT_CS, LOW);
    spiwrite(0xD9);  // woo sekret command?
-   SET_DC;
+   digitalWrite(TFT_DC, HIGH);
    spiwrite(0x10 + index);
-   SET_CS;
+   digitalWrite(TFT_CS, HIGH);
 
-   CLEAR_DC;
-   CLEAR_CS;
+   digitalWrite(TFT_DC, LOW);
+   digitalWrite(TFT_CS, LOW);
    spiwrite(c);
 
-   SET_DC;
+   digitalWrite(TFT_DC, HIGH);
    uint8_t r = spiread();
-   SET_CS;
+   digitalWrite(TFT_CS, HIGH);
 
    return r;
 }
@@ -560,14 +564,14 @@ uint8_t ILI9341_readcommand8(uint8_t c, uint8_t index)
 **************************************************/
 uint16_t ILI9341_readcommand16(uint8_t c) 
 {
-   CLEAR_DC;
-   CLEAR_CS;
+   digitalWrite(TFT_DC, LOW);
+   digitalWrite(TFT_CS, LOW);
 
    spiwrite(c);
    uint16_t r = spiread();
    r <<= 8;
    r |= spiread();
-   SET_CS;
+   digitalWrite(TFT_CS, HIGH);
    
    return r;
 }
@@ -578,8 +582,8 @@ uint16_t ILI9341_readcommand16(uint8_t c)
 **************************************************/
 uint32_t ILI9341_readcommand32(uint8_t c) 
 {
-   CLEAR_DC;
-   CLEAR_CS;
+   digitalWrite(TFT_DC, LOW);
+   digitalWrite(TFT_CS, LOW);
    spiwrite(c);
 
    //dummyclock();
@@ -592,7 +596,7 @@ uint32_t ILI9341_readcommand32(uint8_t c)
    r |= spiread();
    r <<= 8;
    r |= spiread();
-   SET_CS;
+   digitalWrite(TFT_CS, HIGH);
 
    return r;
  }

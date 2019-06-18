@@ -19,7 +19,7 @@ unsigned char getFontSize(void);
 uint16_t getFontColor(void);
 uint16_t getFontBackgroundColor(void);
 uint16_t getFontRowSpacing(void);
-char Pause(struct HighScore* highScores);
+void printf_drawChar(int16_t x, int16_t y, uint16_t yOriginal, unsigned char c);
 void printf_init(void);
 
 /************************************************
@@ -29,13 +29,12 @@ void printf_init(void);
 ************************************************/
 struct _font_settings
 {
-	unsigned char size;
-	uint16_t color;
-	uint16_t bg_color;
-	uint16_t row_spacing;
-	uint16_t x;
-	uint16_t y;
+  unsigned char size;
+  uint16_t color;
+  uint16_t bg_color;
+  uint16_t row_spacing;
+  uint16_t x;
+  uint16_t y;
 };
-
 
 #endif /* DRIVERS_PRINTF_H_ */

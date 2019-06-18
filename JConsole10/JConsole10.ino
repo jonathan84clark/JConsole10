@@ -3,6 +3,9 @@
  * DESC: JConsole10 is a hand-held video game system based
  * on the Arduino Due (32-bit) CPU.
  * Date: 6/13/2019
+ * Update: 6/17/2019, Finalized the custom ILI9341 driver,
+ * validated functionality. Also validated all button functionality.
+ * code needs a major refactor before work can begin.
  ****************************************************/
 #define ILI9341_BLACK       0x0000  ///<   0,   0,   0
 #define ILI9341_NAVY        0x000F  ///<   0,   0, 123
@@ -25,8 +28,8 @@
 #define ILI9341_PINK        0xFC18  ///< 255, 130, 198
 
 #include "SPI.h"
-#include "Adafruit_GFX.h"
-#include "Adafruit_ILI9341.h"
+#include "ILI9341_SPI.h"
+#include "ILI9341_Printf.h"
 #include <SPI.h>
 
 // For the Adafruit shield, these are the default.
@@ -45,21 +48,38 @@
 #define CDS_CELL A3
 #define JOYSTICK_X A10
 #define JOYSTICK_Y A11
+#define BTN0 7
+#define BTN1 6
+#define BTN2 5
+#define BTN3 4
+#define JOY_BTN 18
+
+unsigned char testVal = 0;
 
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
+//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 // If using the breakout, change pins as desired
 //Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
 
 void setup() {
   Serial.begin(9600);
   SPI.begin();
+  ILI9341_begin();
+  ILI9341_fillScreen(COLOR_GREENYELLOW);
   Serial.println("ILI9341 Test!"); 
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
-
+  pinMode(BTN0, INPUT);
+  pinMode(BTN1, INPUT);
+  pinMode(BTN2, INPUT);
+  pinMode(BTN3, INPUT);
+  pinMode(JOY_BTN, INPUT);
+  delay(300);
+  printf_init();
+  printf_drawChar(30, 30, 0, 'A');
+  /*
   // read diagnostics (optional but can help debug problems)
   uint8_t x = tft.readcommand8(ILI9341_RDMODE);
   Serial.print("Display Power Mode: 0x"); Serial.println(x, HEX);
@@ -73,6 +93,7 @@ void setup() {
   Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
 
   Serial.print(F("Lines                    "));
+  */
   delay(500);
 
 }
@@ -87,5 +108,25 @@ void loop(void) {
   {
     Serial.println(analogRead(A11));
     next_time = ms_ticks + 1000;
+  }
+  if (digitalRead(BTN0))
+  {
+    Serial.println("Button0");
+  }
+  if (digitalRead(BTN1))
+  {
+    Serial.println("Button1");
+  }
+  if (digitalRead(BTN2))
+  {
+    Serial.println("Button2");
+  }
+  if (digitalRead(BTN3))
+  {
+    Serial.println("Button3");
+  }
+  if (digitalRead(JOY_BTN))
+  {
+    Serial.println("Joystick Btn");
   }
 }
