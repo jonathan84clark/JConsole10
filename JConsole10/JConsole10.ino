@@ -7,26 +7,6 @@
  * validated functionality. Also validated all button functionality.
  * code needs a major refactor before work can begin.
  ****************************************************/
-#define ILI9341_BLACK       0x0000  ///<   0,   0,   0
-#define ILI9341_NAVY        0x000F  ///<   0,   0, 123
-#define ILI9341_DARKGREEN   0x03E0  ///<   0, 125,   0
-#define ILI9341_DARKCYAN    0x03EF  ///<   0, 125, 123
-#define ILI9341_MAROON      0x7800  ///< 123,   0,   0
-#define ILI9341_PURPLE      0x780F  ///< 123,   0, 123
-#define ILI9341_OLIVE       0x7BE0  ///< 123, 125,   0
-#define ILI9341_LIGHTGREY   0xC618  ///< 198, 195, 198
-#define ILI9341_DARKGREY    0x7BEF  ///< 123, 125, 123
-#define ILI9341_BLUE        0x001F  ///<   0,   0, 255
-#define ILI9341_GREEN       0x07E0  ///<   0, 255,   0
-#define ILI9341_CYAN        0x07FF  ///<   0, 255, 255
-#define ILI9341_RED         0xF800  ///< 255,   0,   0
-#define ILI9341_MAGENTA     0xF81F  ///< 255,   0, 255
-#define ILI9341_YELLOW      0xFFE0  ///< 255, 255,   0
-#define ILI9341_WHITE       0xFFFF  ///< 255, 255, 255
-#define ILI9341_ORANGE      0xFD20  ///< 255, 165,   0
-#define ILI9341_GREENYELLOW 0xAFE5  ///< 173, 255,  41
-#define ILI9341_PINK        0xFC18  ///< 255, 130, 198
-
 #include "SPI.h"
 #include "ILI9341_SPI.h"
 #include "ILI9341_Printf.h"
@@ -55,15 +35,12 @@
 #define JOY_BTN 18
 
 unsigned char testVal = 0;
-
-// Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
-//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
-// If using the breakout, change pins as desired
-//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+TextPrinter textPrinter;
 
 void setup() {
   Serial.begin(9600);
   SPI.begin();
+  delay(300);
   ILI9341_begin();
   ILI9341_fillScreen(COLOR_GREENYELLOW);
   Serial.println("ILI9341 Test!"); 
@@ -77,23 +54,9 @@ void setup() {
   pinMode(BTN3, INPUT);
   pinMode(JOY_BTN, INPUT);
   delay(300);
-  printf_init();
-  printf_drawChar(30, 30, 0, 'A');
-  /*
-  // read diagnostics (optional but can help debug problems)
-  uint8_t x = tft.readcommand8(ILI9341_RDMODE);
-  Serial.print("Display Power Mode: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDMADCTL);
-  Serial.print("MADCTL Mode: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDPIXFMT);
-  Serial.print("Pixel Format: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDIMGFMT);
-  Serial.print("Image Format: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDSELFDIAG);
-  Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
+  //printf_drawChar(30, 30, 0, 'A');
+  textPrinter._print("Jonaffsdffdthadfsdfsdnsdfsdfz");
 
-  Serial.print(F("Lines                    "));
-  */
   delay(500);
 
 }

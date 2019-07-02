@@ -4,37 +4,28 @@
 * text printing to the LCD display. Also contains a custom pause function.
 * Author: Jonathan L Clark
 * Date: 5/6/2015
+* Update: 7/1/2019, Modified the Text printer to be in it's own class
 ******************************************************************/
-
 #ifndef DRIVERS_PRINTF_H_
 #define DRIVERS_PRINTF_H_
 #include <stdint.h>
 
-void _printf(char *characters, ...);
-void unsigned_int_toStr(unsigned int input, char* printBuffer, char* printBufferRev);
-void int_toStr(int input, char* printBuffer, char* printBufferRev);
-void printf_setFont_properties(unsigned char inFontSize, unsigned char inFontRowSpacing, uint16_t inFontColor, uint16_t inFontBgColor);
-void printf_setFont_location(uint16_t inStartX, uint16_t inStartY);
-unsigned char getFontSize(void);
-uint16_t getFontColor(void);
-uint16_t getFontBackgroundColor(void);
-uint16_t getFontRowSpacing(void);
-void printf_drawChar(int16_t x, int16_t y, uint16_t yOriginal, unsigned char c);
-void printf_init(void);
-
-/************************************************
-* FONT SETTINGS
-* DESCRIPTION: Struct contains the configuration
-* settings for the font. 42 bytes
-************************************************/
-struct _font_settings
+class TextPrinter
 {
-  unsigned char size;
-  uint16_t color;
-  uint16_t bg_color;
-  uint16_t row_spacing;
-  uint16_t x;
-  uint16_t y;
+   public:
+      TextPrinter();
+      void draw_char(unsigned char c);
+      void _print(char *characters);
+
+   private:
+      int text_size;
+      uint16_t color;
+      uint16_t background_color;
+      uint16_t row_spacing;
+      uint16_t x_cursor;
+      uint16_t y_cursor;
+      uint16_t indent_position;
+   
 };
 
 #endif /* DRIVERS_PRINTF_H_ */
