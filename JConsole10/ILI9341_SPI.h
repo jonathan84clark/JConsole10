@@ -73,48 +73,6 @@
 
 #define ILI9341_GMCTRP1 0xE0
 #define ILI9341_GMCTRN1 0xE1
-/*
-#define ILI9341_PWCTR6  0xFC
-
-*/
-
-
-uint16_t GetBgColor(void);
-
-void ILI9341_begin(void);
-void setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-void ILI9341_pushColor(uint16_t color);
-void ILI9341_fillScreen(uint16_t color);
-void ILI9341_drawPixel(int16_t x, int16_t y, uint16_t color);
-void ILI9341_drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
-void ILI9341_drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
-void ILI9341_fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
-void ILI9341_setRotation(uint8_t r);
-void ILI9341_invertDisplay(char i);
-void ILI9341_displaySprite(struct Sprite* sprite, uint8_t clear);
-uint16_t ILI9341_color565(uint8_t r, uint8_t g, uint8_t b);
-
-  /* These are not for current use, 8-bit protocol only! */
-uint8_t ILI9341_readdata(void);
-uint8_t  ILI9341_readcommand8(uint8_t reg, uint8_t index);
-uint16_t readcommand16(uint8_t);
-uint32_t readcommand32(uint8_t);
-//void     dummyclock(void);
-
-uint8_t spiwrite(uint8_t data);
-void writecommand(uint8_t c);
-void writedata(uint8_t d);
-uint8_t spiread(void);
-uint16_t GetPaletteColor(char index);
-void setBgColor(uint16_t inColor);
-
-
-#define TFT_CLK 27
-#define TFT_MISO 25
-#define TFT_MOSI 26
-#define TFT_DC 9
-#define TFT_CS 10
-#define TFT_RST 8
 
 #define NUM_COLORS 18
 #define COLOR_NAVY        0x000F      /*   0,   0, 128 */
@@ -127,10 +85,10 @@ void setBgColor(uint16_t inColor);
 #define COLOR_ORANGE      0xFD20      /* 255, 165,   0 */
 #define COLOR_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
 #define COLOR_PINK        0xF81F
-#define	COLOR_BLACK   0x0000
-#define	COLOR_BLUE    0x001F
-#define	COLOR_RED     0xF800
-#define	COLOR_GREEN   0x07E0
+#define  COLOR_BLACK   0x0000
+#define COLOR_BLUE    0x001F
+#define COLOR_RED     0xF800
+#define COLOR_GREEN   0x07E0
 #define COLOR_CYAN    0x07FF
 #define COLOR_MAGENTA 0xF81F
 #define COLOR_YELLOW  0xFFE0
@@ -145,6 +103,63 @@ void setBgColor(uint16_t inColor);
 #define COLOR_LIGHTSEAGREEN 0x2595
 #define COLOR_MLRYGREEN 0x4A84
 #define COLOR_SKYBLUE 0x867F
+/*
+#define ILI9341_PWCTR6  0xFC
+
+*/
+#define TFT_CLK 27
+#define TFT_MISO 25
+#define TFT_MOSI 26
+#define TFT_DC 9
+#define TFT_CS 10
+#define TFT_RST 8
+
+class ILI9341
+{
+   public:
+      ILI9341();
+      
+      uint16_t GetBgColor(void) { return bg_color;}
+      void _print(char *characters);
+      void draw_char(unsigned char c);
+      
+      
+      void drawPixel(int16_t x, int16_t y, uint16_t color);
+      void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+      void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+      void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+      void setRotation(uint8_t r);
+      void invertDisplay(char i);
+      //void ILI9341_displaySprite(struct Sprite* sprite, uint8_t clear);
+
+      /* These are not for current use, 8-bit protocol only! */
+      uint8_t readdata(void);
+      uint8_t  readcommand8(uint8_t reg, uint8_t index);
+      uint16_t readcommand16(uint8_t);
+      uint32_t readcommand32(uint8_t);
+
+      uint8_t spiwrite(uint8_t data);
+      void writecommand(uint8_t c);
+      void writedata(uint8_t d);
+      uint8_t spiread(void);
+      uint16_t GetPaletteColor(char index);
+      void setBgColor(uint16_t inColor);
+      void initialize(void);
+      void fillScreen(uint16_t color);
+
+   private:
+      uint16_t bg_color;
+      void setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+      int text_size;
+      uint16_t color;
+      uint16_t background_color;
+      uint16_t row_spacing;
+      uint16_t x_cursor;
+      uint16_t y_cursor;
+      uint16_t indent_position;
+};
+
+
 
 
 #endif
