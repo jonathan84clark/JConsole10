@@ -6,10 +6,12 @@
  * Update: 6/17/2019, Finalized the custom ILI9341 driver,
  * validated functionality. Also validated all button functionality.
  * code needs a major refactor before work can begin.
- * Update: 7/2/2019, Encapsulated the an ILI9341 driver into a class for the LCD
+ * Update: 7/2/2019, Encapsulated the an ILI9341 driver into a class for the LCD.
+ * added the sprite class to the game.
  ****************************************************/
 #include "SPI.h"
 #include "ILI9341_SPI.h"
+#include "Sprite.h"
 #include <SPI.h>
 
 // For the Adafruit shield, these are the default.
@@ -36,11 +38,13 @@
 
 unsigned char testVal = 0;
 ILI9341 lcd;
+Sprite testSprite(5, 200, &lcd);
 
 void setup() {
+  
   Serial.begin(9600);
   SPI.begin();
-  delay(300);
+  delay(500);
   lcd.initialize();
   lcd.fillScreen(COLOR_GREENYELLOW);
   Serial.println("ILI9341 Test!"); 
@@ -54,7 +58,9 @@ void setup() {
   pinMode(BTN3, INPUT);
   pinMode(JOY_BTN, INPUT);
   delay(300);
-  lcd._print("Jonaffsdffdthadfsdfsdnsdfsdfz");
+  
+  testSprite.draw();
+  //lcd._print("Jonaffsdffdthadfsdfsdnsdfsdfz");
 
   delay(500);
 
@@ -62,6 +68,7 @@ void setup() {
 
 unsigned long ms_ticks = 0;
 unsigned long next_time = 0;
+unsigned long next_update = 0;
 bool on = false;
 
 void loop(void) {
@@ -70,6 +77,11 @@ void loop(void) {
   {
     Serial.println(analogRead(A11));
     next_time = ms_ticks + 1000;
+  }
+  if (next_update < ms_ticks)
+  {
+     testSprite.update();
+     next_update = ms_ticks + 40;
   }
   if (digitalRead(BTN0))
   {
