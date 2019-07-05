@@ -10,20 +10,23 @@
 #define _SPRITE_
 
 #include "ILI9341_SPI.h"
+#include "Vector2D.h"
 
 class Sprite
 {
    public:
       Sprite();
-      Sprite(uint16_t inX, uint16_t inY, ILI9341* inLcd);
+      Sprite(Vector2D inPosition, Vector2D inScale, ILI9341* inLcd);
+      bool move_sprite(Vector2D delta);
       void draw();
+      void erase();
       void update();
    
 
 
    private:
-      uint16_t x;
-      uint16_t y;
+      Vector2D position;
+      Vector2D scale;
       ILI9341* lcd;
       
 };

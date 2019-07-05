@@ -8,10 +8,12 @@
  * code needs a major refactor before work can begin.
  * Update: 7/2/2019, Encapsulated the an ILI9341 driver into a class for the LCD.
  * added the sprite class to the game.
+ * Update: 7/4/2019, Added basic vector movement of objects in the game
  ****************************************************/
 #include "SPI.h"
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
+#include "Vector2D.h"
 #include <SPI.h>
 
 // For the Adafruit shield, these are the default.
@@ -38,7 +40,10 @@
 
 unsigned char testVal = 0;
 ILI9341 lcd;
-Sprite testSprite(5, 200, &lcd);
+Vector2D newposition(300, 200);
+Vector2D movement(-4, -4);
+Vector2D scale(10, 10);
+Sprite testSprite(newposition, scale, &lcd);
 
 void setup() {
   
@@ -80,7 +85,8 @@ void loop(void) {
   }
   if (next_update < ms_ticks)
   {
-     testSprite.update();
+     //testSprite.update();
+     testSprite.move_sprite(movement);
      next_update = ms_ticks + 40;
   }
   if (digitalRead(BTN0))
