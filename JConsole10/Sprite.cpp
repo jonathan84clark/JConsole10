@@ -25,6 +25,14 @@ Sprite::Sprite(Vector2D inPosition, Vector2D inScale, ILI9341* inLcd)
    scale.y = inScale.y;
 }
 
+void Sprite::physics_update(float delta_t)
+{
+   float vo = velocity.y;
+   delta_t = delta_t * 0.2; // Arbitrary scaler to make the object fall more slowly.
+   float vf = vo + -9.81 * delta_t;
+   velocity.y = (int)vf;
+}
+
 /******************************************************
 * MOVE SPRITE
 * DESC: Moves the sprite by the input vector.
@@ -70,16 +78,5 @@ void Sprite::erase()
 
 void Sprite::update()
 {
-   lcd->fillRect(position.y, position.x, scale.y, scale.x, lcd->GetBgColor());
-   position.x += 4;
-   position.y -= 4;
-   if (position.x >= 200)
-   {
-      position.x = 0;
-   }
-   if (position.y <= 11)
-   {
-      position.y = 200;
-   }
-   draw();
+   
 }

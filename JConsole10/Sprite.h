@@ -18,15 +18,19 @@ class Sprite
       Sprite();
       Sprite(Vector2D inPosition, Vector2D inScale, ILI9341* inLcd);
       bool move_sprite(Vector2D delta);
+      void physics_update(float delta_t);
       void draw();
       void erase();
       void update();
+      Vector2D velocity;
+      
    
 
 
    private:
       Vector2D position;
       Vector2D scale;
+
       ILI9341* lcd;
       
 };

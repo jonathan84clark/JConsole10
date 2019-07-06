@@ -8,9 +8,9 @@
  * code needs a major refactor before work can begin.
  * Update: 7/2/2019, Encapsulated the an ILI9341 driver into a class for the LCD.
  * added the sprite class to the game.
- * Update: 7/4/2019, Added basic vector movement of objects in the game
+ * Update: 7/4/2019, Added basic vector movement of objects in the game.
+ * Update: 7/5/2019, Added some basic physics to the game.
  ****************************************************/
-#include "SPI.h"
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
 #include "Vector2D.h"
@@ -40,13 +40,15 @@
 
 unsigned char testVal = 0;
 ILI9341 lcd;
-Vector2D newposition(300, 200);
-Vector2D movement(-4, -4);
+Vector2D newposition(40, 40);
+Vector2D vo(5, 5);
 Vector2D scale(10, 10);
 Sprite testSprite(newposition, scale, &lcd);
 
+
 void setup() {
-  
+
+  testSprite.velocity = vo;
   Serial.begin(9600);
   SPI.begin();
   delay(500);
@@ -75,19 +77,30 @@ unsigned long ms_ticks = 0;
 unsigned long next_time = 0;
 unsigned long next_update = 0;
 bool on = false;
+unsigned long last_time = 0;
+unsigned long delta_time = 0;
+float delta_time_sec;
 
 void loop(void) {
   ms_ticks = millis();
+  delta_time = ms_ticks - last_time;
   if (next_time < ms_ticks)
   {
-    Serial.println(analogRead(A11));
+    //Serial.println(analogRead(A11));
     next_time = ms_ticks + 1000;
   }
   if (next_update < ms_ticks)
   {
+     delta_time = ms_ticks - last_time;
+     delta_time_sec = (float)delta_time;
+     delta_time_sec = delta_time_sec / 1000.0;
      //testSprite.update();
-     testSprite.move_sprite(movement);
+     //testSprite.move_sprite(movement);
+     //Serial.println(delta_time_sec);
+     testSprite.physics_update(delta_time_sec);
+     testSprite.move_sprite(testSprite.velocity);
      next_update = ms_ticks + 40;
+     last_time = ms_ticks;
   }
   if (digitalRead(BTN0))
   {
@@ -109,4 +122,5 @@ void loop(void) {
   {
     Serial.println("Joystick Btn");
   }
+  //last_time = ms_ticks;
 }
