@@ -17,11 +17,10 @@ class Sprite
    public:
       Sprite();
       Sprite(Vector2D inPosition, Vector2D inScale, ILI9341* inLcd);
-      bool move_sprite(Vector2D delta);
-      void physics_update(float delta_t);
+      bool move_sprite();
+      void update(float delta_t);
       void draw();
       void erase();
-      void update();
       Vector2D velocity;
       
    
@@ -30,6 +29,10 @@ class Sprite
    private:
       Vector2D position;
       Vector2D scale;
+      float gravityScaler;
+      float bounciness;
+      float friction;
+      bool useGravity;
 
       ILI9341* lcd;
       

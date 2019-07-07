@@ -17,8 +17,8 @@ class Vector2D
       Vector2D();
       
       Vector2D(int inX, int inY);
-      int x;
-      int y;     
+      float x;
+      float y;     
 };
 
 #endif

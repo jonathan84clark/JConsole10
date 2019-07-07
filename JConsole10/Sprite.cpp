@@ -21,44 +21,82 @@ Sprite::Sprite(Vector2D inPosition, Vector2D inScale, ILI9341* inLcd)
 {
    position = inPosition;
    lcd = inLcd;
+   bounciness = 0.0;
+   friction = 0.0;
+   useGravity = true;
+   gravityScaler = 0.2;
    scale.x = inScale.x;
    scale.y = inScale.y;
 }
 
-void Sprite::physics_update(float delta_t)
+void Sprite::update(float delta_t)
 {
-   float vo = velocity.y;
-   delta_t = delta_t * 0.2; // Arbitrary scaler to make the object fall more slowly.
-   float vf = vo + -9.81 * delta_t;
-   velocity.y = (int)vf;
+   if (useGravity)
+   {
+      float vo = velocity.y;
+      delta_t = delta_t * gravityScaler; // Apply a gravity scaler to scale it for the screen size
+      float vf = vo + -9.81 * delta_t;
+      velocity.y = vf;
+   }
+   move_sprite();
 }
 
 /******************************************************
 * MOVE SPRITE
 * DESC: Moves the sprite by the input vector.
 *******************************************************/
-bool Sprite::move_sprite(Vector2D delta)
+bool Sprite::move_sprite()
 {
    bool moved = false;
+   Vector2D previousPos = position;
    // Move the sprite in the x direction but only if it won't leave the screen
-   if (position.x + delta.x + scale.x < ILI9341HEIGHT && position.x + delta.x > 0)
+   if (position.x + velocity.x + scale.x < ILI9341HEIGHT && position.x + velocity.x > 0)
    {
-       erase();
-       position.x += delta.x;
-       moved = true;
+       if (velocity.x != 0.0)
+       {
+          erase();
+          moved = true;
+       }
+       position.x += velocity.x;
+   }
+   else
+   {
+      // Take us all the way to the edge of the screen
+      if (position.x + velocity.x + scale.x >= ILI9341HEIGHT)
+      {
+         position.x = ILI9341HEIGHT - scale.x;
+      }
+      else
+      {
+         position.x = 0;
+      }
+      velocity.x = velocity.x * -1.0 * bounciness;
    }
    // Move the sprite in the y direction but only if it won't leave the screen.
-   if (position.y + delta.y + scale.y < ILI9341WIDTH && position.y + delta.y > 0)
+   if (position.y + velocity.y + scale.y < ILI9341WIDTH && position.y + velocity.y > 0)
    {
       // If we already moved in the x direction we already erased and shoul'nt do it again
-      if (!moved)
+      if (!moved && velocity.y != 0.0)
       {
          erase();
+         moved = true;
       }
-      position.y += delta.y;
+      position.y += velocity.y;
+   }
+   else
+   {
+      if (position.y + velocity.y + scale.y >= ILI9341WIDTH)
+      {
+         position.y = ILI9341WIDTH - scale.y;
+      }
+      else
+      {
+         position.y = 0;
+      }
+      velocity.y = velocity.y * -1.0 * bounciness;
    }
    // Only re-draw the sprite if we were able to move
-   if (moved)
+   if (moved || previousPos.x != position.x || previousPos.y != position.y)
    {
        draw();
        return true;
@@ -74,9 +112,4 @@ void Sprite::draw()
 void Sprite::erase()
 {
    lcd->fillRect(position.y, position.x, scale.y, scale.x, lcd->GetBgColor());
-}
-
-void Sprite::update()
-{
-   
 }

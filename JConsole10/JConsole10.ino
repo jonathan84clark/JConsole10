@@ -10,6 +10,7 @@
  * added the sprite class to the game.
  * Update: 7/4/2019, Added basic vector movement of objects in the game.
  * Update: 7/5/2019, Added some basic physics to the game.
+ * Update: 7/6/2019, Fixed some issues with the physics system. Continued work on the sprite object.
  ****************************************************/
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
@@ -41,7 +42,7 @@
 unsigned char testVal = 0;
 ILI9341 lcd;
 Vector2D newposition(40, 40);
-Vector2D vo(5, 5);
+Vector2D vo(3, 12);
 Vector2D scale(10, 10);
 Sprite testSprite(newposition, scale, &lcd);
 
@@ -49,9 +50,10 @@ Sprite testSprite(newposition, scale, &lcd);
 void setup() {
 
   testSprite.velocity = vo;
+  delay(1500);
   Serial.begin(9600);
   SPI.begin();
-  delay(500);
+
   lcd.initialize();
   lcd.fillScreen(COLOR_GREENYELLOW);
   Serial.println("ILI9341 Test!"); 
@@ -97,8 +99,8 @@ void loop(void) {
      //testSprite.update();
      //testSprite.move_sprite(movement);
      //Serial.println(delta_time_sec);
-     testSprite.physics_update(delta_time_sec);
-     testSprite.move_sprite(testSprite.velocity);
+     testSprite.update(delta_time_sec);
+     Serial.println(testSprite.velocity.y);
      next_update = ms_ticks + 40;
      last_time = ms_ticks;
   }
