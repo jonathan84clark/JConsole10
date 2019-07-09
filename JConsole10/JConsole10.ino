@@ -41,10 +41,13 @@
 
 unsigned char testVal = 0;
 ILI9341 lcd;
-Vector2D newposition(40, 40);
-Vector2D vo(3, 12);
+Vector2D newposition(200, 40);
+Vector2D sprite2Pos(40, 40);
+Vector2D vo(-3.0, 0.0);
 Vector2D scale(10, 10);
-Sprite testSprite(newposition, scale, &lcd);
+Vector2D scale2(30, 30);
+Sprite testSprite(newposition, scale, 0.3, false, &lcd);
+Sprite testSprite2(sprite2Pos, scale2, 0.3, false, &lcd);
 
 
 void setup() {
@@ -69,6 +72,7 @@ void setup() {
   delay(300);
   
   testSprite.draw();
+  testSprite2.draw();
   //lcd._print("Jonaffsdffdthadfsdfsdnsdfsdfz");
 
   delay(500);
@@ -100,7 +104,8 @@ void loop(void) {
      //testSprite.move_sprite(movement);
      //Serial.println(delta_time_sec);
      testSprite.update(delta_time_sec);
-     Serial.println(testSprite.velocity.y);
+     Serial.println(testSprite.check_collision(&testSprite2));
+     //Serial.println(testSprite.velocity.y);
      next_update = ms_ticks + 40;
      last_time = ms_ticks;
   }

@@ -16,8 +16,9 @@ class Sprite
 {
    public:
       Sprite();
-      Sprite(Vector2D inPosition, Vector2D inScale, ILI9341* inLcd);
+      Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, bool inUseGravity, ILI9341* inLcd);
       bool move_sprite();
+      bool check_collision(Sprite* other);
       void update(float delta_t);
       void draw();
       void erase();

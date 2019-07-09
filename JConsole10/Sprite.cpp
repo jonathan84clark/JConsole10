@@ -17,13 +17,13 @@ Sprite::Sprite()
 }
 
 
-Sprite::Sprite(Vector2D inPosition, Vector2D inScale, ILI9341* inLcd)
+Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, bool inUseGravity, ILI9341* inLcd)
 {
    position = inPosition;
    lcd = inLcd;
-   bounciness = 0.0;
+   bounciness = inBounciness;
    friction = 0.0;
-   useGravity = true;
+   useGravity = inUseGravity;
    gravityScaler = 0.2;
    scale.x = inScale.x;
    scale.y = inScale.y;
@@ -41,6 +41,26 @@ void Sprite::update(float delta_t)
    move_sprite();
 }
 
+bool Sprite::check_collision(Sprite* other)
+{
+   // Object collided with the other on its right edge
+   if (position.x + scale.x + 1 >= other->position.x)
+   {
+      //velocity.x = velocity.x * -1.0 * bounciness;
+      //erase();
+      //position.x -= 2;
+   }
+   // Object collided with the other on its left edge
+   if (position.x <= (other->scale.x + other->position.x) && position.y )
+   {
+      velocity.x = velocity.x * -1.0 * bounciness;
+      //erase();
+      //position.x += 2;
+      return true;
+   }
+   return false;
+}
+
 /******************************************************
 * MOVE SPRITE
 * DESC: Moves the sprite by the input vector.
@@ -50,7 +70,7 @@ bool Sprite::move_sprite()
    bool moved = false;
    Vector2D previousPos = position;
    // Move the sprite in the x direction but only if it won't leave the screen
-   if (position.x + velocity.x + scale.x < ILI9341HEIGHT && position.x + velocity.x > 0)
+   if (position.x + velocity.x + scale.x < ILI9341HEIGHT && (position.x + velocity.x) > 0)
    {
        if (velocity.x != 0.0)
        {
