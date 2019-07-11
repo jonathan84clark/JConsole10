@@ -43,20 +43,20 @@ void Sprite::update(float delta_t)
 
 bool Sprite::check_collision(Sprite* other)
 {
-   // Object collided with the other on its right edge
-   if (position.x + scale.x + 1 >= other->position.x)
+   if ((position.y - scale.y) <= other->position.y)// && position.y > (other->position.y - other->scale.y))
    {
-      //velocity.x = velocity.x * -1.0 * bounciness;
-      //erase();
-      //position.x -= 2;
-   }
-   // Object collided with the other on its left edge
-   if (position.x <= (other->scale.x + other->position.x) && position.y )
-   {
-      velocity.x = velocity.x * -1.0 * bounciness;
-      //erase();
-      //position.x += 2;
-      return true;
+       // Object collided with the other on its right edge
+       if ((position.x + scale.x) >= other->position.x && ((position.x + scale.x) < (other->position.x + other->scale.x)))
+       {
+          velocity.x = velocity.x * -1.0 * bounciness;
+          return true;
+       }
+       // Object collided with the other on its left edge
+       if (position.x <= (other->scale.x + other->position.x) && position.x > other->position.x)
+       {
+           velocity.x = velocity.x * -1.0 * bounciness;
+          return true;
+       }
    }
    return false;
 }

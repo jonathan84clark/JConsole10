@@ -41,9 +41,9 @@
 
 unsigned char testVal = 0;
 ILI9341 lcd;
-Vector2D newposition(200, 40);
-Vector2D sprite2Pos(40, 40);
-Vector2D vo(-3.0, 0.0);
+Vector2D newposition(40, 60);
+Vector2D sprite2Pos(200, 40);
+Vector2D vo(3.0, 0.0);
 Vector2D scale(10, 10);
 Vector2D scale2(30, 30);
 Sprite testSprite(newposition, scale, 0.3, false, &lcd);
