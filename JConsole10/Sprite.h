@@ -15,26 +15,39 @@
 class Sprite
 {
    public:
+      // Public Functions
       Sprite();
-      Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, bool inUseGravity, ILI9341* inLcd);
+      Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, ILI9341* inLcd);
       bool move_sprite();
       bool check_collision(Sprite* other);
       void update(float delta_t);
       void draw();
-      void erase();
-      Vector2D velocity;
-      
+      void destroy() { isAlive = false; erase();}
+      virtual void OnCollisionEnter(Sprite* other);
+
+      // Accessors and Mutators
+      void SetVelocity(Vector2D inVelocity) { velocity = inVelocity;}
+      Vector2D GetVelocity() { return velocity;}
+      bool GetIsAlive() { return isAlive;}
    
-
-
    private:
+      // Internal update functions
+      void update_friction();
+      void erase();
+
+      // State Variables
       Vector2D position;
+      Vector2D velocity;
       Vector2D scale;
       float gravityScaler;
       float bounciness;
       float friction;
+      bool isAlive;
       bool useGravity;
 
+      // Internal Variables
+      int framesSinceXCollision;
+      int framesSinceYCollision;
       ILI9341* lcd;
       
 };
