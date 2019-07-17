@@ -17,7 +17,7 @@ class Sprite
    public:
       // Public Functions
       Sprite();
-      Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, ILI9341* inLcd);
+      Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, int color, ILI9341* inLcd);
       bool move_sprite();
       bool check_collision(Sprite* other);
       void update(float delta_t);

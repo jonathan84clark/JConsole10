@@ -16,15 +16,8 @@
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
 #include "Vector2D.h"
+#include "Controls.h"
 #include <SPI.h>
-
-// For the Adafruit shield, these are the default.
-#define TFT_CLK 27
-#define TFT_MISO 25
-#define TFT_MOSI 26
-#define TFT_DC 9
-#define TFT_CS 10
-#define TFT_RST 8
 
 // Pins for other subsystems
 #define TFT_LED 20
@@ -32,8 +25,6 @@
 #define LEFT_RIGHT_TILT A2
 #define FORWARD_BACK_GYRO A1
 #define CDS_CELL A3
-#define JOYSTICK_X A10
-#define JOYSTICK_Y A11
 #define BTN0 7
 #define BTN1 6
 #define BTN2 5
@@ -47,14 +38,14 @@ Vector2D sprite2Pos(0, 50);
 Vector2D vo(-3.0, 0.0);
 Vector2D scale(10, 10);
 Vector2D scale2(10, 10);
-Sprite testSprite(newposition, scale, 0.4, 0.01, false, &lcd);
-Sprite testSprite2(sprite2Pos, scale2, 0.4, 0.01, false, &lcd);
-
+Sprite testSprite(newposition, scale, 0.4, 0.01, 0, false, &lcd);
+Sprite testSprite2(sprite2Pos, scale2, 0.4, 0.01, 0, false, &lcd);
+Controls controls;
 
 void setup() {
 
   testSprite.SetVelocity(vo);
-  testSprite = Sprite(newposition, scale2, 0.4, 0.1, false, &lcd);
+  testSprite = Sprite(newposition, scale2, 0.4, 0.1, 0, false, &lcd);
   testSprite.SetVelocity(vo);
   delay(1500);
   Serial.begin(9600);
@@ -96,11 +87,11 @@ void testGame()
    Vector2D vo(-3.0, 3.0);
    Sprite sprites[10];
    Vector2D newposition(200, 50);
-   sprites[0] = Sprite(newposition, scale2, 0.8, 0.0, false, &lcd);
+   sprites[0] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
    sprites[0].SetVelocity(vo);
    vo = Vector2D(3.0, 3.0);
    newposition = Vector2D(140, 50);
-   sprites[1] = Sprite(newposition, scale2, 0.8, 0.0, false, &lcd);
+   sprites[1] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
    sprites[1].SetVelocity(vo);
    for (;;)
    {
@@ -133,6 +124,8 @@ void testGame()
                 }
             }
          }
+         controls.Update(ms_ticks);
+         Serial.println(controls.joystick.x);
          //testSprite.update(delta_time_sec);
          next_update = ms_ticks + 40;
          last_time = ms_ticks;
