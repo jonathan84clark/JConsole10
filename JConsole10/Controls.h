@@ -19,11 +19,15 @@ class Controls
       Controls();
       void Update(unsigned long ms_ticks);
       Vector2D joystick;
+      bool buttons[5];
+      unsigned int random_numbers[15];
+      unsigned int random_index;
 
 
 
 
    private:
+      void UpdateJoystick();
      
 
 
