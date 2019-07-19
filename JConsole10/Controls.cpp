@@ -36,9 +36,17 @@
 #define JOYSTICK_DOWN 0
 #define JOYSTICK_DOWN_MAG (float)(JOYSTICK_DOWN - JOYSTICK_YCTR);
 
+// Gyro Positions
+#define LEFT_RIGHT_TILT A2
+#define MIN_TILT_POS 400
+#define MAX_TILT_POS 600
+#define CTR_TILT 500
+#define FORWARD_BACK_GYRO A1
+
 Controls::Controls()
 {
   //Setup Joystick
+  random_index = 0;
   pinMode(JOYSTICK_X, INPUT);
   pinMode(JOYSTICK_Y, INPUT);
   pinMode(CDS_CELL, INPUT);
@@ -46,6 +54,8 @@ Controls::Controls()
   pinMode(BTN1, INPUT);
   pinMode(BTN2, INPUT);
   pinMode(BTN3, INPUT);
+  pinMode(LEFT_RIGHT_TILT, INPUT);
+  pinMode(FORWARD_BACK_GYRO, INPUT);
   pinMode(JOY_BTN, INPUT);
 }
 
@@ -82,4 +92,17 @@ void Controls::Update(unsigned long ms_ticks)
    buttons[2] = digitalRead(BTN2);
    buttons[3] = digitalRead(BTN3);
    buttons[4] = digitalRead(JOY_BTN);
+   Serial.println(analogRead(FORWARD_BACK_GYRO));
+   //analogRead(FORWARD_BACK_GYRO);
+   // Add a new random number to the random number array
+   unsigned int cdsVal = analogRead(CDS_CELL);
+   if (cdsVal != random_numbers[random_index])
+   {
+       random_index++;
+       if (random_index == NUM_RAND_NUMS)
+       {
+          random_index = 0;
+       }
+       random_numbers[random_index] = cdsVal;
+   }
 }

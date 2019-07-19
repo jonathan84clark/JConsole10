@@ -23,8 +23,7 @@
 // Pins for other subsystems
 #define TFT_LED 20
 #define SUPER_WHITE_LED 13
-#define LEFT_RIGHT_TILT A2
-#define FORWARD_BACK_GYRO A1
+
 
 unsigned char testVal = 0;
 ILI9341 lcd;
