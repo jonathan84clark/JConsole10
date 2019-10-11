@@ -14,6 +14,7 @@
  * Update: 7/11/2019, Improved the physics engine. Finished colliders.
  * Update: 10/10/2019, Added player control code. Modified the controls driver to use scalers. 
  * added basic shooting effects to the game.
+ * Update: 7/17/2019, Started putting together the control system.
  ****************************************************/
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
@@ -24,14 +25,7 @@
 // Pins for other subsystems
 #define TFT_LED 20
 #define SUPER_WHITE_LED 13
-#define LEFT_RIGHT_TILT A2
-#define FORWARD_BACK_GYRO A1
-#define CDS_CELL A3
-#define BTN0 7
-#define BTN1 6
-#define BTN2 5
-#define BTN3 4
-#define JOY_BTN 18
+
 
 unsigned char testVal = 0;
 ILI9341 lcd;
@@ -61,11 +55,6 @@ void setup() {
   digitalWrite(TFT_LED, HIGH);
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
-  pinMode(BTN0, INPUT);
-  pinMode(BTN1, INPUT);
-  pinMode(BTN2, INPUT);
-  pinMode(BTN3, INPUT);
-  pinMode(JOY_BTN, INPUT);
   delay(300);
   
   //testSprite.draw();
@@ -155,8 +144,6 @@ void testGame()
                 //}
             }
          }
-         
-         //Serial.println(controls.joystick.x);
          //testSprite.update(delta_time_sec);
          next_update = ms_ticks + 40;
          last_time = ms_ticks;
@@ -186,26 +173,6 @@ void loop(void) {
      //Serial.println(testSprite.velocity.y);
      next_update = ms_ticks + 40;
      last_time = ms_ticks;
-  }
-  if (digitalRead(BTN0))
-  {
-    Serial.println("Button0");
-  }
-  if (digitalRead(BTN1))
-  {
-    Serial.println("Button1");
-  }
-  if (digitalRead(BTN2))
-  {
-    Serial.println("Button2");
-  }
-  if (digitalRead(BTN3))
-  {
-    Serial.println("Button3");
-  }
-  if (digitalRead(JOY_BTN))
-  {
-    Serial.println("Joystick Btn");
   }
   //last_time = ms_ticks;
 }
