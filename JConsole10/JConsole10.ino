@@ -12,6 +12,8 @@
  * Update: 7/5/2019, Added some basic physics to the game.
  * Update: 7/6/2019, Fixed some issues with the physics system. Continued work on the sprite object.
  * Update: 7/11/2019, Improved the physics engine. Finished colliders.
+ * Update: 10/10/2019, Added player control code. Modified the controls driver to use scalers. 
+ * added basic shooting effects to the game.
  ****************************************************/
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
@@ -38,6 +40,7 @@ Vector2D sprite2Pos(0, 50);
 Vector2D vo(-3.0, 0.0);
 Vector2D scale(10, 10);
 Vector2D scale2(10, 10);
+Vector2D blasterScaler(10, 3);
 Sprite testSprite(newposition, scale, 0.4, 0.01, 0, false, &lcd);
 Sprite testSprite2(sprite2Pos, scale2, 0.4, 0.01, 0, false, &lcd);
 Controls controls;
@@ -85,47 +88,75 @@ float delta_time_sec;
 void testGame()
 {
    Vector2D vo(-3.0, 3.0);
-   Sprite sprites[10];
+   Sprite player;
+   Sprite shots[10];
+   int shotIndex = 0;
+   //Sprite sprites[10];
    Vector2D newposition(200, 50);
-   sprites[0] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
-   sprites[0].SetVelocity(vo);
+   Vector2D newVelocity(0,0);
+   player = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
+   //sprites[0] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
+   //sprites[0].SetVelocity(vo);
    vo = Vector2D(3.0, 3.0);
    newposition = Vector2D(140, 50);
-   sprites[1] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
-   sprites[1].SetVelocity(vo);
+   
+   //sprites[1] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
+   //sprites[1].SetVelocity(vo);
+   unsigned long next_player = 0;
    for (;;)
    {
       ms_ticks = millis();
       delta_time = ms_ticks - last_time;
       if (next_time < ms_ticks)
       {
-         //Serial.println(analogRead(A11));
-        next_time = ms_ticks + 1000;
+         controls.Update(ms_ticks);
+         newVelocity.x = controls.joystick.x * 8.0;
+         newVelocity.y = controls.joystick.y * 8.0;
+         player.SetVelocity(newVelocity);
+         if (digitalRead(BTN0))
+         {
+            shots[shotIndex] = Sprite(player.GetPosition(), blasterScaler, 0.8, 0.0, 0, false, &lcd);
+
+            Vector2D shotVel = Vector2D(5.0, 0.0);
+            shots[shotIndex++].SetVelocity(shotVel);
+            if (shotIndex == 10)
+            {
+               shotIndex = 0;
+            }
+         }
+         next_time = ms_ticks + 200;
+      }
+      if (next_player < ms_ticks)
+      {
+         
+         next_player = ms_ticks + 203;
       }
       if (next_update < ms_ticks)
       {
          delta_time = ms_ticks - last_time;
          delta_time_sec = (float)delta_time;
          delta_time_sec = delta_time_sec / 1000.0;
+         player.update(delta_time_sec);
+         //shot.update(delta_time_sec);
          for (int i = 0; i < 10; i++)
          {
-            if (sprites[i].GetIsAlive())
+            if (shots[i].GetIsAlive())
             {
-               sprites[i].update(delta_time_sec);
+               shots[i].update(delta_time_sec);
             }
          }
          for (int i = 0; i < 10; i++)
          {
             for (int j = 0; j < 10; j++)
             {
-                if (j != i && sprites[i].GetIsAlive())
-                {
-                   sprites[i].check_collision(&sprites[j]);
-                }
+                //if (j != i && sprites[i].GetIsAlive())
+                //{
+                //   sprites[i].check_collision(&sprites[j]);
+                //}
             }
          }
-         controls.Update(ms_ticks);
-         Serial.println(controls.joystick.x);
+         
+         //Serial.println(controls.joystick.x);
          //testSprite.update(delta_time_sec);
          next_update = ms_ticks + 40;
          last_time = ms_ticks;

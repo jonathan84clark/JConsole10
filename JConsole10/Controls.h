@@ -19,12 +19,13 @@ class Controls
       Controls();
       void Update(unsigned long ms_ticks);
       Vector2D joystick;
+      Vector2D joystick_center;
 
 
 
 
    private:
-     
+     float ApplyDeadZone(float inValue);
 
 
   

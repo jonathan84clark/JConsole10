@@ -28,6 +28,7 @@ class Sprite
       // Accessors and Mutators
       void SetVelocity(Vector2D inVelocity) { velocity = inVelocity;}
       Vector2D GetVelocity() { return velocity;}
+      Vector2D GetPosition() { return position;}
       bool GetIsAlive() { return isAlive;}
    
    private:
