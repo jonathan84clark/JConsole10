@@ -15,6 +15,8 @@
  * Update: 10/10/2019, Added player control code. Modified the controls driver to use scalers. 
  * added basic shooting effects to the game.
  * Update: 7/17/2019, Started putting together the control system.
+ * Update; 10/12/2019, Added code to support setting the color of Sprites. Cleaned up the code. Added
+ * code to start generating blocks. Continuing to flesh out the drivers.
  ****************************************************/
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
@@ -30,39 +32,27 @@
 unsigned char testVal = 0;
 ILI9341 lcd;
 Vector2D newposition(200, 50);
+Vector2D startBlockPos(300, 50);
 Vector2D sprite2Pos(0, 50);
 Vector2D vo(-3.0, 0.0);
 Vector2D scale(10, 10);
 Vector2D scale2(10, 10);
 Vector2D blasterScaler(10, 3);
-Sprite testSprite(newposition, scale, 0.4, 0.01, 0, false, &lcd);
-Sprite testSprite2(sprite2Pos, scale2, 0.4, 0.01, 0, false, &lcd);
 Controls controls;
 
 void setup() {
 
-  testSprite.SetVelocity(vo);
-  testSprite = Sprite(newposition, scale2, 0.4, 0.1, 0, false, &lcd);
-  testSprite.SetVelocity(vo);
-  delay(1500);
+  delay(3000);
   Serial.begin(9600);
   SPI.begin();
 
   lcd.initialize();
-  lcd.fillScreen(COLOR_GREENYELLOW);
+  lcd.setBgColor(COLOR_GREENYELLOW);
   Serial.println("ILI9341 Test!"); 
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
-  delay(300);
-  
-  //testSprite.draw();
-  //testSprite2.draw();
-  testSprite.draw();
-  //lcd._print("Jonaffsdffdthadfsdfsdnsdfsdfz");
-
-  delay(500);
 
 }
 
@@ -79,11 +69,13 @@ void testGame()
    Vector2D vo(-3.0, 3.0);
    Sprite player;
    Sprite shots[10];
+   Sprite blocks[10];
    int shotIndex = 0;
+   int block_create_index = 0;
    //Sprite sprites[10];
    Vector2D newposition(200, 50);
    Vector2D newVelocity(0,0);
-   player = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
+   player = Sprite(newposition, scale2, 0.8, 0.0, 0, false, 12, &lcd);
    //sprites[0] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
    //sprites[0].SetVelocity(vo);
    vo = Vector2D(3.0, 3.0);
@@ -92,6 +84,7 @@ void testGame()
    //sprites[1] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
    //sprites[1].SetVelocity(vo);
    unsigned long next_player = 0;
+   unsigned long next_block_time = 0;
    for (;;)
    {
       ms_ticks = millis();
@@ -102,11 +95,12 @@ void testGame()
          newVelocity.x = controls.joystick.x * 8.0;
          newVelocity.y = controls.joystick.y * 8.0;
          player.SetVelocity(newVelocity);
-         if (digitalRead(BTN0))
+         if (controls.buttons[0])
          {
-            shots[shotIndex] = Sprite(player.GetPosition(), blasterScaler, 0.8, 0.0, 0, false, &lcd);
-
+            shots[shotIndex] = Sprite(player.GetPosition(), blasterScaler, 0.8, 0.0, 0, true, 12, &lcd);
             Vector2D shotVel = Vector2D(5.0, 0.0);
+            shotVel.x += player.GetVelocity().x;
+            shotVel.y += player.GetVelocity().y;
             shots[shotIndex++].SetVelocity(shotVel);
             if (shotIndex == 10)
             {
@@ -114,6 +108,17 @@ void testGame()
             }
          }
          next_time = ms_ticks + 200;
+      }
+      if (next_block_time < ms_ticks)
+      {
+          blocks[block_create_index] = Sprite(startBlockPos, scale, 0.0, 0.0, 0, true, 12, &lcd);
+          Vector2D newVel = Vector2D(-5.0, 0.0);
+          blocks[block_create_index++].SetVelocity(newVel);
+          if (block_create_index == 10)
+          {
+              block_create_index = 0;
+          }
+          next_block_time = ms_ticks + 203;
       }
       if (next_player < ms_ticks)
       {
@@ -136,12 +141,9 @@ void testGame()
          }
          for (int i = 0; i < 10; i++)
          {
-            for (int j = 0; j < 10; j++)
+            if (blocks[i].GetIsAlive())
             {
-                //if (j != i && sprites[i].GetIsAlive())
-                //{
-                //   sprites[i].check_collision(&sprites[j]);
-                //}
+               blocks[i].update(delta_time_sec);
             }
          }
          //testSprite.update(delta_time_sec);
@@ -154,25 +156,4 @@ void testGame()
 void loop(void) {
   testGame();
   ms_ticks = millis();
-  delta_time = ms_ticks - last_time;
-  if (next_time < ms_ticks)
-  {
-    //Serial.println(analogRead(A11));
-    next_time = ms_ticks + 1000;
-  }
-  if (next_update < ms_ticks)
-  {
-     delta_time = ms_ticks - last_time;
-     delta_time_sec = (float)delta_time;
-     delta_time_sec = delta_time_sec / 1000.0;
-     //testSprite.update();
-     //testSprite.move_sprite(movement);
-     //Serial.println(delta_time_sec);
-     testSprite.update(delta_time_sec);
-     //testSprite.check_collision(&testSprite2);
-     //Serial.println(testSprite.velocity.y);
-     next_update = ms_ticks + 40;
-     last_time = ms_ticks;
-  }
-  //last_time = ms_ticks;
 }

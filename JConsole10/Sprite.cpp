@@ -19,16 +19,18 @@ Sprite::Sprite()
 /****************************************************
 *
 ****************************************************/
-Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, int color, ILI9341* inLcd)
+Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, bool inDestroyOnEdge, int inColor, ILI9341* inLcd)
 {
    position = inPosition;
    lcd = inLcd;
    bounciness = inBounciness;
    friction = inFriction;
    useGravity = inUseGravity;
+   destroyOnEdge = inDestroyOnEdge;
    gravityScaler = 0.2;
    scale.x = inScale.x;
    scale.y = inScale.y;
+   color = inColor;
    framesSinceXCollision = 0;
    framesSinceYCollision = 0;
    isAlive = true;
@@ -52,6 +54,10 @@ void Sprite::update(float delta_t)
    update_friction();
 }
 
+/******************************************************
+* UPDATE FRICTION
+* DESC: Handles applying friction to the gameobject
+*******************************************************/
 void Sprite::update_friction()
 {
    if (friction > 0.0)
@@ -75,6 +81,11 @@ void Sprite::update_friction()
    }
 }
 
+/******************************************************
+* CHECK COLLISION
+* DESC: Checks the current object against the input object
+* to determine if they collided.
+*******************************************************/
 bool Sprite::check_collision(Sprite* other)
 {
   bool collision = false;
@@ -132,53 +143,51 @@ bool Sprite::check_collision(Sprite* other)
 }
 
 /******************************************************
+* MOVE ONE DIRECTION
+* DESC: Moves the sprite in a single direction either x or y.
+*******************************************************/
+bool Sprite::move_one_direction(float edge1, float edge2, float highEdge, float scale, float &position, float &velocity)
+{
+   // Move the sprite in the x direction but only if it won't leave the screen
+   if (edge1 < highEdge && edge2 > 0.0)
+   {
+       position += velocity;
+   }
+   else
+   {
+      // Take us all the way to the edge of the screen
+      position = ((edge1 >= highEdge) ? (highEdge - scale) : 0);
+      if (destroyOnEdge)
+      {
+         destroy();
+         return false;
+      }
+      velocity = velocity * -1.0 * bounciness;
+   }
+   return true;
+}
+
+/******************************************************
 * MOVE SPRITE
 * DESC: Moves the sprite by the input vector.
 *******************************************************/
 bool Sprite::move_sprite()
 {
    //Computations to determine if we are at the edge of the screen.
-   float newRightEdge = position.x + velocity.x + scale.x;
-   float newLeftEdge = position.x + velocity.x;
-   float newTopEdge = position.y + velocity.y + scale.y;
-   float newBottomEdge = position.y + velocity.y;
    Vector2D newPosition = position;
+
+   // Compute the new x position
+   if (!move_one_direction((position.x + velocity.x + scale.x), (position.x + velocity.x), ILI9341HEIGHT, scale.x, newPosition.x, velocity.x))
+   {
+      return false;
+   }
+
+   // Compute the new y position
+   if (!move_one_direction((position.y + velocity.y + scale.y), (position.y + velocity.y), ILI9341WIDTH, scale.y, newPosition.y, velocity.y))
+   {
+      return false;
+   }
    
-   // Move the sprite in the x direction but only if it won't leave the screen
-   if (newRightEdge < ILI9341HEIGHT && newLeftEdge > 0.0)
-   {
-       newPosition.x += velocity.x;
-   }
-   else
-   {
-      // Take us all the way to the edge of the screen
-      if (newRightEdge >= ILI9341HEIGHT)
-      {
-         newPosition.x = ILI9341HEIGHT - scale.x;
-      }
-      else
-      {
-         newPosition.x = 0;
-      }
-      velocity.x = velocity.x * -1.0 * bounciness;
-   }
-   // Move the sprite in the y direction but only if it won't leave the screen.
-   if (newTopEdge < ILI9341WIDTH && newBottomEdge > 0.0)
-   {
-      newPosition.y += velocity.y;
-   }
-   else
-   {
-      if (newTopEdge >= ILI9341WIDTH)
-      {
-         newPosition.y = ILI9341WIDTH - scale.y;
-      }
-      else
-      {
-         newPosition.y = 0;
-      }
-      velocity.y = velocity.y * -1.0 * bounciness;
-   }
    // Drawing the sprite is VERY expensive, only do it if we have moved by at least one pixel position
    if ((int)newPosition.x != (int)position.x || (int)newPosition.y != (int)position.y)
    {
@@ -198,7 +207,7 @@ bool Sprite::move_sprite()
 
 void Sprite::draw()
 {
-   lcd->fillRect(position.y, position.x,  scale.y, scale.x, COLOR_RED);
+   lcd->fillRect(position.y, position.x,  scale.y, scale.x, color);
 }
 
 void Sprite::erase()

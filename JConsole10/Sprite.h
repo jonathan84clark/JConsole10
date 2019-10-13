@@ -17,7 +17,7 @@ class Sprite
    public:
       // Public Functions
       Sprite();
-      Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, int color, ILI9341* inLcd);
+      Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, bool inDestroyOnEdge, int inColor, ILI9341* inLcd);
       bool move_sprite();
       bool check_collision(Sprite* other);
       void update(float delta_t);
@@ -32,6 +32,9 @@ class Sprite
       bool GetIsAlive() { return isAlive;}
    
    private:
+
+      // Helper functions
+      bool move_one_direction(float edge1, float edge2, float highEdge, float scale, float &position, float &velocity);
       // Internal update functions
       void update_friction();
       void erase();
@@ -45,10 +48,12 @@ class Sprite
       float friction;
       bool isAlive;
       bool useGravity;
+      bool destroyOnEdge;
 
       // Internal Variables
       int framesSinceXCollision;
       int framesSinceYCollision;
+      int color;
       ILI9341* lcd;
       
 };

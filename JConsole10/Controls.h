@@ -24,11 +24,13 @@ class Controls
       bool buttons[5];
       unsigned int random_numbers[NUM_RAND_NUMS];
       unsigned int random_index;
+      float Random(float max);
 
 
 
 
    private:
+     int random_pull_indx;
      float ApplyDeadZone(float inValue);
       void UpdateJoystick();
 

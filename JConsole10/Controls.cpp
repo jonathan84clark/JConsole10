@@ -55,9 +55,18 @@ Controls::Controls()
 {
   //Setup Joystick
   random_index = 0;
+  random_pull_indx = 0;
   pinMode(JOYSTICK_X, INPUT);
   pinMode(JOYSTICK_Y, INPUT);
   pinMode(LEFT_RIGHT_TILT, INPUT);
+  pinMode(CDS_CELL, INPUT);
+  pinMode(BTN0, INPUT);
+  pinMode(BTN1, INPUT);
+  pinMode(BTN2, INPUT);
+  pinMode(BTN3, INPUT);
+  pinMode(LEFT_RIGHT_TILT, INPUT);
+  pinMode(FORWARD_BACK_GYRO, INPUT);
+  pinMode(JOY_BTN, INPUT);
 
 }
 
@@ -77,14 +86,6 @@ float Controls::ApplyDeadZone(float inValue)
        inValue = 0.0;
     }
     return inValue;
-  pinMode(CDS_CELL, INPUT);
-  pinMode(BTN0, INPUT);
-  pinMode(BTN1, INPUT);
-  pinMode(BTN2, INPUT);
-  pinMode(BTN3, INPUT);
-  pinMode(LEFT_RIGHT_TILT, INPUT);
-  pinMode(FORWARD_BACK_GYRO, INPUT);
-  pinMode(JOY_BTN, INPUT);
 }
 
 void Controls::UpdateJoystick()
@@ -112,6 +113,25 @@ void Controls::UpdateJoystick()
    }
 }
 
+/**************************************************
+* RANDOM
+* DESCRIPTION: Generates a random number between 0-1024.
+**************************************************/
+float Controls::Random(float max)
+{
+    int value = random_numbers[random_pull_indx];
+    random_pull_indx++;
+    if (random_pull_indx == NUM_RAND_NUMS)
+    {
+       random_pull_indx = 0;
+    }
+}
+
+/**************************************************
+* UPDATE
+* DESCRIPTION: Updates the controls with the latest
+* control information.
+**************************************************/
 void Controls::Update(unsigned long ms_ticks)
 {
    float xValue = (JOYSTICK_CTR - (float)analogRead(JOYSTICK_X)) / JOYSTICK_CTR;
@@ -124,8 +144,6 @@ void Controls::Update(unsigned long ms_ticks)
    buttons[2] = digitalRead(BTN2);
    buttons[3] = digitalRead(BTN3);
    buttons[4] = digitalRead(JOY_BTN);
-   Serial.println(analogRead(FORWARD_BACK_GYRO));
-   //analogRead(FORWARD_BACK_GYRO);
    // Add a new random number to the random number array
    unsigned int cdsVal = analogRead(CDS_CELL);
    if (cdsVal != random_numbers[random_index])
