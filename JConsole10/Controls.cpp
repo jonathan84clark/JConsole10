@@ -119,12 +119,15 @@ void Controls::UpdateJoystick()
 **************************************************/
 float Controls::Random(float max)
 {
-    int value = random_numbers[random_pull_indx];
+    float value = (float)random_numbers[random_pull_indx];
     random_pull_indx++;
     if (random_pull_indx == NUM_RAND_NUMS)
     {
        random_pull_indx = 0;
     }
+    Serial.println(value);
+    //value = value * max / 1024.0;
+    return value;
 }
 
 /**************************************************
