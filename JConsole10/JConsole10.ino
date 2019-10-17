@@ -17,6 +17,8 @@
  * Update: 7/17/2019, Started putting together the control system.
  * Update; 10/12/2019, Added code to support setting the color of Sprites. Cleaned up the code. Added
  * code to start generating blocks. Continuing to flesh out the drivers.
+ * Update: 10/16/2019, Fixed a minor issue with the controls. Also added computations to make a better
+ * random number generator.
  ****************************************************/
 #include "ILI9341_SPI.h"
 #include "Sprite.h"
@@ -45,6 +47,7 @@ void setup() {
   delay(3000);
   Serial.begin(9600);
   SPI.begin();
+  controls.Setup();
 
   lcd.initialize();
   lcd.setBgColor(COLOR_GREENYELLOW);
@@ -75,7 +78,7 @@ void testGame()
    //Sprite sprites[10];
    Vector2D newposition(200, 50);
    Vector2D newVelocity(0,0);
-   player = Sprite(newposition, scale2, 0.8, 0.0, 0, false, 12, &lcd);
+   player = Sprite(newposition, scale2, 0.0, 0.0, 0, false, 12, &lcd);
    //sprites[0] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
    //sprites[0].SetVelocity(vo);
    vo = Vector2D(3.0, 3.0);
@@ -111,12 +114,16 @@ void testGame()
       }
       if (next_block_time < ms_ticks)
       {
-          blocks[block_create_index] = Sprite(startBlockPos, scale, 0.0, 0.0, 0, true, 12, &lcd);
-          Vector2D newVel = Vector2D(-5.0, 0.0);
-          blocks[block_create_index++].SetVelocity(newVel);
-          if (block_create_index == 10)
+          startBlockPos.y = controls.Random(300);
+          for (int i = 0; i < 10; i++)
           {
-              block_create_index = 0;
+            if (!blocks[i].GetIsAlive())
+            {
+               blocks[i] = Sprite(startBlockPos, scale, 0.0, 0.0, 0, true, 12, &lcd);
+               Vector2D newVel = Vector2D(-5.0, 0.0);
+               blocks[i].SetVelocity(newVel);
+               break;
+            }
           }
           next_block_time = ms_ticks + 203;
       }

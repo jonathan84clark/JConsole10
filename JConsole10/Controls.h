@@ -19,23 +19,18 @@ class Controls
       Controls();
       void Update(unsigned long ms_ticks);
       Vector2D joystick;
-      Vector2D joystick_center;
       Vector2D gyro;
       bool buttons[5];
       unsigned int random_numbers[NUM_RAND_NUMS];
       unsigned int random_index;
-      float Random(float max);
-
-
-
+      unsigned int Random(unsigned int max);
+      void Setup();
 
    private:
+     int joystick_ctr_x;
+     int joystick_ctr_y;
      int random_pull_indx;
-     float ApplyDeadZone(float inValue);
-      void UpdateJoystick();
-
-
-  
+     float ApplyDeadZone(float inValue);  
 };
 
 #endif
