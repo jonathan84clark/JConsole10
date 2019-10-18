@@ -9,7 +9,7 @@
 #ifndef _SPRITE_
 #define _SPRITE_
 
-#include "ILI9341_SPI.h"
+#include "src/hal/ILI9341_SPI.h"
 #include "Vector2D.h"
 
 class Sprite

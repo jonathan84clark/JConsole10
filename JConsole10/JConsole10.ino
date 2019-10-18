@@ -20,15 +20,19 @@
  * Update: 10/16/2019, Fixed a minor issue with the controls. Also added computations to make a better
  * random number generator.
  ****************************************************/
-#include "ILI9341_SPI.h"
+#include "src/hal/ILI9341_SPI.h"
 #include "Sprite.h"
 #include "Vector2D.h"
-#include "Controls.h"
+#include "src/hal/Controls.h"
+#include "UIBar.h"
 #include <SPI.h>
 
 // Pins for other subsystems
 #define TFT_LED 20
 #define SUPER_WHITE_LED 13
+
+#define NUM_BLOCKS 10
+#define NUM_SHOTS 10
 
 
 unsigned char testVal = 0;
@@ -71,21 +75,17 @@ void testGame()
 {
    Vector2D vo(-3.0, 3.0);
    Sprite player;
-   Sprite shots[10];
-   Sprite blocks[10];
+   Sprite shots[NUM_SHOTS];
+   Sprite blocks[NUM_BLOCKS];
+   UIBar health(newposition, 4, 40, COLOR_BLUE, COLOR_RED, &lcd);
+   health.update(0.8);
    int shotIndex = 0;
    int block_create_index = 0;
-   //Sprite sprites[10];
    Vector2D newposition(200, 50);
    Vector2D newVelocity(0,0);
    player = Sprite(newposition, scale2, 0.0, 0.0, 0, false, 12, &lcd);
-   //sprites[0] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
-   //sprites[0].SetVelocity(vo);
    vo = Vector2D(3.0, 3.0);
    newposition = Vector2D(140, 50);
-   
-   //sprites[1] = Sprite(newposition, scale2, 0.8, 0.0, 0, false, &lcd);
-   //sprites[1].SetVelocity(vo);
    unsigned long next_player = 0;
    unsigned long next_block_time = 0;
    for (;;)
@@ -105,7 +105,7 @@ void testGame()
             shotVel.x += player.GetVelocity().x;
             shotVel.y += player.GetVelocity().y;
             shots[shotIndex++].SetVelocity(shotVel);
-            if (shotIndex == 10)
+            if (shotIndex == NUM_SHOTS)
             {
                shotIndex = 0;
             }
@@ -115,7 +115,7 @@ void testGame()
       if (next_block_time < ms_ticks)
       {
           startBlockPos.y = controls.Random(300);
-          for (int i = 0; i < 10; i++)
+          for (int i = 0; i < NUM_SHOTS; i++)
           {
             if (!blocks[i].GetIsAlive())
             {
@@ -139,14 +139,22 @@ void testGame()
          delta_time_sec = delta_time_sec / 1000.0;
          player.update(delta_time_sec);
          //shot.update(delta_time_sec);
-         for (int i = 0; i < 10; i++)
+         for (int i = 0; i < NUM_SHOTS; i++)
          {
             if (shots[i].GetIsAlive())
             {
                shots[i].update(delta_time_sec);
+               for (int j = 0; j < NUM_BLOCKS; j++)
+               {
+                  if (blocks[j].GetIsAlive() && blocks[j].check_collision(&shots[i]))
+                  {
+                      blocks[j].destroy();
+                      shots[i].destroy();
+                  }
+               }
             }
          }
-         for (int i = 0; i < 10; i++)
+         for (int i = 0; i < NUM_BLOCKS; i++)
          {
             if (blocks[i].GetIsAlive())
             {

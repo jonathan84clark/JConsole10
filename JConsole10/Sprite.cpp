@@ -8,7 +8,7 @@
 *******************************************************/
 
 #include <stdio.h>
-#include "ILI9341_SPI.h"
+#include "src/hal/ILI9341_SPI.h"
 #include "Sprite.h"
 
 Sprite::Sprite()
@@ -17,7 +17,7 @@ Sprite::Sprite()
 }
 
 /****************************************************
-*
+* SPRITE CONSTRUCTOR
 ****************************************************/
 Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, bool inDestroyOnEdge, int inColor, ILI9341* inLcd)
 {
@@ -36,11 +36,21 @@ Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float 
    isAlive = true;
 }
 
+/****************************************************
+* ON COLLISION ENTER
+* DESC: A user-defined function to handle collision events
+****************************************************/
 void Sprite::OnCollisionEnter(Sprite* other)
 {
     // Custom collision handle
 }
 
+
+/****************************************************
+* UPDATE
+* DESC: Updates the sprite object, allowing it to move
+* and redraw according to it's specs
+****************************************************/
 void Sprite::update(float delta_t)
 {
    if (useGravity)

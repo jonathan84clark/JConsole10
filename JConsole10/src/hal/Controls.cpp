@@ -7,7 +7,6 @@
 * Date: 7/16/2019
 *******************************************************/
 #include <stdio.h>
-#include "ILI9341_SPI.h"
 #include "Controls.h"
 #include <Arduino.h>
 

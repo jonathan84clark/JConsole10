@@ -9,7 +9,7 @@
 #ifndef _CONTROLS_
 #define _CONTROLS_
 
-#include "Vector2D.h"
+#include "../../Vector2D.h"
 
 #define NUM_RAND_NUMS 15
 
