@@ -19,6 +19,7 @@
  * code to start generating blocks. Continuing to flesh out the drivers.
  * Update: 10/16/2019, Fixed a minor issue with the controls. Also added computations to make a better
  * random number generator.
+ * Update: 10/18/2019, Added support for a vertacle UI bar. 
  ****************************************************/
 #include "src/hal/ILI9341_SPI.h"
 #include "Sprite.h"
@@ -46,11 +47,17 @@ Vector2D scale2(10, 10);
 Vector2D blasterScaler(10, 3);
 Controls controls;
 
+int testSprite[] = {COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
+                    COLOR_BLUE, COLOR_BLUE, COLOR_BLUE, COLOR_BLUE,
+                    COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED};
+
 void setup() {
+
 
   delay(3000);
   Serial.begin(9600);
   SPI.begin();
+
   controls.Setup();
 
   lcd.initialize();
@@ -77,7 +84,7 @@ void testGame()
    Sprite player;
    Sprite shots[NUM_SHOTS];
    Sprite blocks[NUM_BLOCKS];
-   UIBar health(newposition, 4, 40, COLOR_BLUE, COLOR_RED, &lcd);
+   UIBar health(newposition, true, 4, 40, COLOR_BLUE, COLOR_RED, &lcd);
    health.update(0.8);
    int shotIndex = 0;
    int block_create_index = 0;

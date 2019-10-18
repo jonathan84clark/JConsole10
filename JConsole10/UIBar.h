@@ -1,10 +1,9 @@
 /*******************************************************
-* SPRITE CLASS
-* DESC: The sprite class handles the behavior of a 2D sprite
-* Gameobject. The class is desinged to be inherited and subclasses
-* can be used to emulate different behaviors.
+* UI BAR CLASS
+* DESC: The UI Bar class is designed to provide a basic 
+* health bar to display in the game.
 * Author: Jonathan L Clark
-* Date: 7/2/2019
+* Date: 10/17/2019
 *******************************************************/
 #ifndef _UIBAR_
 #define _UIBAR_
@@ -17,7 +16,7 @@ class UIBar
    public:
       // Public Functions
       UIBar();
-      UIBar(Vector2D inPosition, float inLength, float inWidth, int inColor, int inContrast, ILI9341* inLcd);
+      UIBar(Vector2D inPosition, bool inVertical, float inLength, float inWidth, int inColor, int inContrast, ILI9341* inLcd);
       void update(float newValue);
       void draw();
       void destroy() { erase();}
@@ -33,6 +32,7 @@ class UIBar
       float length;
       int color;
       int contrast;
+      bool vertical;
       ILI9341* lcd;
       
 };

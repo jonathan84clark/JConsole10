@@ -17,13 +17,14 @@ UIBar::UIBar()
 /****************************************************
 * UI BAR CONSTRUCTOR
 ****************************************************/
-UIBar::UIBar(Vector2D inPosition, float inLength, float inWidth, int inColor, int inContrast, ILI9341* inLcd)
+UIBar::UIBar(Vector2D inPosition, bool inVertical, float inLength, float inWidth, int inColor, int inContrast, ILI9341* inLcd)
 {
    position = inPosition;
    lcd = inLcd;
    width = inWidth;
    length = inLength;
    contrast = inContrast;
+   vertical = inVertical;
 }
 
 /****************************************************
@@ -42,9 +43,17 @@ void UIBar::update(float newValue)
    }
    float colorWidth = newValue * width;
    float contrastWidth = (1.0 - newValue) * width;
-   
-   lcd->fillRect(position.y, position.x,  length, colorWidth, color);
-   lcd->fillRect(position.y, position.x+colorWidth,  length, contrastWidth, contrast);
+
+   if (vertical)
+   {
+      lcd->fillRect(position.y, position.x,  colorWidth, length, color);
+      lcd->fillRect(position.y+colorWidth, position.x,  contrastWidth, length, contrast);
+   }
+   else
+   {
+      lcd->fillRect(position.y, position.x,  length, colorWidth, color);
+      lcd->fillRect(position.y, position.x+colorWidth,  length, contrastWidth, contrast);
+   }
 }
 
 /****************************************************
@@ -53,5 +62,12 @@ void UIBar::update(float newValue)
 ****************************************************/
 void UIBar::erase()
 {
-   lcd->fillRect(position.y, position.x, length, width, lcd->GetBgColor());
+   if (vertical)
+   {
+      lcd->fillRect(position.y, position.x,  width, length, lcd->GetBgColor());
+   }
+   else
+   {
+      lcd->fillRect(position.y, position.x, length, width, lcd->GetBgColor());
+   }
 }
