@@ -51,6 +51,16 @@ int testSprite[] = {COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
                     COLOR_BLUE, COLOR_BLUE, COLOR_BLUE, COLOR_BLUE,
                     COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED};
 
+#define SIZE_X 7
+#define SIZE_Y 7
+int twoDArrayTest[SIZE_X][SIZE_Y] = {{COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
+                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
+                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
+                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
+                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
+                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
+                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED}};
+
 void setup() {
 
 
@@ -59,6 +69,7 @@ void setup() {
   SPI.begin();
 
   controls.Setup();
+  
 
   lcd.initialize();
   lcd.setBgColor(COLOR_GREENYELLOW);
@@ -67,6 +78,7 @@ void setup() {
   digitalWrite(TFT_LED, HIGH);
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
+  lcd.display_image((int *)twoDArrayTest, 50, 50, SIZE_X, SIZE_Y, 0);
 
 }
 
@@ -176,6 +188,6 @@ void testGame()
 }
 
 void loop(void) {
-  testGame();
-  ms_ticks = millis();
+  //testGame();
+  //ms_ticks = millis();
 }

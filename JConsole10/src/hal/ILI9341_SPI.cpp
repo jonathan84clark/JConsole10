@@ -419,27 +419,48 @@ void ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t colo
 * DISPLAY PIXEL ARRAY REVERSE
 * DESCRIPTION: Prints a 2D array of pixel to the LCD
 **************************************************/
-//void ILI9341::displaySprite(struct Sprite* sprite, uint8_t clear)
-//{
-
-  /*
+void ILI9341::display_image(int *image, int x, int y, int width, int height, uint8_t clear)
+{
   char hi;
   char lo;
   int i;
   int j;
-  uint16_t h = sprite->height;
-  uint16_t w = sprite->width;
+  uint16_t h = height;
+  uint16_t w = width;
   uint16_t currentColor = COLOR_WHITE;
-  if((sprite->y_pos >= ILI9341WIDTH) || (sprite->x_pos >= ILI9341HEIGHT)) return;
-  if((sprite->y_pos + h - 1) >= ILI9341WIDTH)  h = ILI9341WIDTH  - sprite->y_pos;
-  if((sprite->x_pos + w - 1) >= ILI9341HEIGHT)  w = ILI9341HEIGHT - sprite->x_pos;
+  if((y >= ILI9341WIDTH) || (x >= ILI9341HEIGHT)) return;
+  if((y + h - 1) >= ILI9341WIDTH)  h = ILI9341WIDTH  - y;
+  if((x + w - 1) >= ILI9341HEIGHT)  w = ILI9341HEIGHT - x;
 
-  setAddrWindow(sprite->y_pos, sprite->x_pos, sprite->y_pos+h, sprite->x_pos+w-1);
+  setAddrWindow(y, x, y+h, x+w-1);
 
   digitalWrite(TFT_DC, HIGH);
   digitalWrite(TFT_CS, LOW);
+  bool direction = true;
+  int position_index = 0;
 
-  if (sprite->direction == Right)
+  //Pixel paint the object
+  for (i = 0; i < w; i++)
+  {
+    for (j=h; j >= 0; j--)
+    {
+        if (clear)
+        {
+           currentColor = bg_color;
+        }
+        else
+        {
+           currentColor = *((image+i*w) + j);
+        }
+        hi = currentColor >> 8;
+        lo = currentColor;
+        SPI.transfer(hi);
+        SPI.transfer(lo);
+     }
+  }
+
+/*
+  if (direction)
   {
      //Pixel paint the object
      for (i = 0; i < w; i++)
@@ -450,9 +471,9 @@ void ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t colo
            {
                currentColor = bg_color;
            }
-           else if (sprite->getPixelColorFunc != NULL)
+           else
            {
-               currentColor = sprite->getPixelColorFunc(i, j, sprite->specialColor, sprite->animationNum);
+               currentColor = image[position_index++];
            }
            hi = currentColor >> 8;
            lo = currentColor;
@@ -472,9 +493,9 @@ void ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t colo
            {
                currentColor = bg_color;
            }
-           else if (sprite->getPixelColorFunc != NULL)
+           else
            {
-               currentColor = sprite->getPixelColorFunc(i, j, sprite->specialColor, sprite->animationNum);
+               currentColor = image[position_index++];
            }
            hi = currentColor >> 8;
            lo = currentColor;
@@ -483,9 +504,10 @@ void ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t colo
         }
      }
   }
-  digitalWrite(TFT_CS, HIGH);
   */
-//}
+  digitalWrite(TFT_CS, HIGH);
+
+}
 
 
 #define MADCTL_MY  0x80
