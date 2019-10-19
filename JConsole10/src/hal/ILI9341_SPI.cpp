@@ -419,7 +419,7 @@ void ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t colo
 * DISPLAY PIXEL ARRAY REVERSE
 * DESCRIPTION: Prints a 2D array of pixel to the LCD
 **************************************************/
-void ILI9341::display_image(int *image, int x, int y, int width, int height, uint8_t clear)
+void ILI9341::display_image(int image[], int x, int y, int width, int height, int orientation, uint8_t clear)
 {
   char hi;
   char lo;
@@ -428,52 +428,31 @@ void ILI9341::display_image(int *image, int x, int y, int width, int height, uin
   uint16_t h = height;
   uint16_t w = width;
   uint16_t currentColor = COLOR_WHITE;
-  if((y >= ILI9341WIDTH) || (x >= ILI9341HEIGHT)) return;
-  if((y + h - 1) >= ILI9341WIDTH)  h = ILI9341WIDTH  - y;
-  if((x + w - 1) >= ILI9341HEIGHT)  w = ILI9341HEIGHT - x;
+  //if((y >= ILI9341WIDTH) || (x >= ILI9341HEIGHT)) return;
+  //if((y + h - 1) >= ILI9341WIDTH)  h = ILI9341WIDTH  - y;
+  //if((x + w - 1) >= ILI9341HEIGHT)  w = ILI9341HEIGHT - x;
 
-  setAddrWindow(y, x, y+h, x+w-1);
+  setAddrWindow(y, x, y+h-1, x+w-1);
 
   digitalWrite(TFT_DC, HIGH);
   digitalWrite(TFT_CS, LOW);
   bool direction = true;
   int position_index = 0;
 
-  //Pixel paint the object
-  for (i = 0; i < w; i++)
-  {
-    for (j=h; j >= 0; j--)
-    {
-        if (clear)
-        {
-           currentColor = bg_color;
-        }
-        else
-        {
-           currentColor = *((image+i*w) + j);
-        }
-        hi = currentColor >> 8;
-        lo = currentColor;
-        SPI.transfer(hi);
-        SPI.transfer(lo);
-     }
-  }
-
-/*
-  if (direction)
+  if (orientation == 0)
   {
      //Pixel paint the object
-     for (i = 0; i < w; i++)
+     for (i = 0; i < width; i++)
      {
-        for (j=h; j >= 0; j--)
+        for (j=0; j < height; j++)
         {
            if (clear)
            {
-               currentColor = bg_color;
+              currentColor = bg_color;
            }
            else
            {
-               currentColor = image[position_index++];
+              currentColor = image[position_index++];
            }
            hi = currentColor >> 8;
            lo = currentColor;
@@ -482,20 +461,21 @@ void ILI9341::display_image(int *image, int x, int y, int width, int height, uin
         }
      }
   }
-  else
+  else if (orientation == 1)
   {
+	  position_index = (width * height) - 1;
      //Pixel paint the object
-     for (i = w; i > 0; i--)
+     for (i = 0; i < width; i++)
      {
-        for (j=h; j >= 0; j--)
+        for (j=0; j < height; j++)
         {
            if (clear)
            {
-               currentColor = bg_color;
+              currentColor = bg_color;
            }
            else
            {
-               currentColor = image[position_index++];
+              currentColor = image[position_index--];
            }
            hi = currentColor >> 8;
            lo = currentColor;
@@ -504,7 +484,54 @@ void ILI9341::display_image(int *image, int x, int y, int width, int height, uin
         }
      }
   }
-  */
+  else if (orientation == 2)
+  {
+     //Pixel paint the object
+     for (i = 0; i < width; i++)
+     {
+		position_index = i;
+        for (j=0; j < height; j++)
+        {
+           if (clear)
+           {
+              currentColor = bg_color;
+           }
+           else
+           {
+              currentColor = image[position_index];
+			  position_index += width;
+           }
+           hi = currentColor >> 8;
+           lo = currentColor;
+           SPI.transfer(hi);
+           SPI.transfer(lo);
+        }
+     }
+  }
+  else if (orientation == 3)
+  {
+     //Pixel paint the object
+     for (i = width-1; i >= 0; i--)
+     {
+		position_index = i;
+        for (j=0; j < height; j++)
+        {
+           if (clear)
+           {
+              currentColor = bg_color;
+           }
+           else
+           {
+              currentColor = image[position_index];
+			  position_index += width;
+           }
+           hi = currentColor >> 8;
+           lo = currentColor;
+           SPI.transfer(hi);
+           SPI.transfer(lo);
+        }
+     }
+  }
   digitalWrite(TFT_CS, HIGH);
 
 }

@@ -52,14 +52,13 @@ int testSprite[] = {COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
                     COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED};
 
 #define SIZE_X 7
-#define SIZE_Y 7
-int twoDArrayTest[SIZE_X][SIZE_Y] = {{COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
-                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
-                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
-                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
-                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
-                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED},
-                                     {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED}};
+#define SIZE_Y 6
+int twoDArrayTest[] = {COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
+                                     COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
+                                     COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
+                                     COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
+                                     COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED,
+                                     COLOR_BLUE, COLOR_BLUE, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED, COLOR_RED};
 
 void setup() {
 
@@ -78,7 +77,7 @@ void setup() {
   digitalWrite(TFT_LED, HIGH);
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
-  lcd.display_image((int *)twoDArrayTest, 50, 50, SIZE_X, SIZE_Y, 0);
+  lcd.display_image(twoDArrayTest, 50, 50, SIZE_X, SIZE_Y, 3, 0);
 
 }
 
