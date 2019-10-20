@@ -1,6 +1,6 @@
 
-# JConsole8b (Modified to be CMSIS-Core compliant)
-JConsole8 is a hand held video game system. The software in this repository contains the drivers and games that are a part of JConsole8. Here is a list of all the JConsole platforms:  
+# JConsole10
+JConsole10 is a hand held video game system. The software in this repository contains the drivers and games that are a part of JConsole8. Here is a list of all the JConsole platforms:  
 
 | Platform      | Microcontroller  | BitSize | CPU     |  Memory |  Flash  | 
 | ------------- |:----------------:|:-------:|:-------:|:-------:|:-------:|
