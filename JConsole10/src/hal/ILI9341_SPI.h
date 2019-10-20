@@ -96,6 +96,7 @@
 #define COLOR_WHITE   0xFFFF
 #define COLOR_LTGREY  0xC618
 #define COLOR_DRKGREY 0x630C
+#define COLOR_GREY 0x630C
 #define COLOR_LTGREEN 0x04C0
 #define COLOR_LIMEGREEN 0x87E0
 #define COLOR_FORESTGREEN 0x2444
@@ -159,8 +160,5 @@ class ILI9341
       uint16_t y_cursor;
       uint16_t indent_position;
 };
-
-
-
 
 #endif

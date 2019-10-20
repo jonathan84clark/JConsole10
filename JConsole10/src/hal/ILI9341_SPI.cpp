@@ -425,72 +425,35 @@ void ILI9341::display_image(int image[], int x, int y, int width, int height, in
   char lo;
   int i;
   int j;
-  uint16_t h = height;
-  uint16_t w = width;
   uint16_t currentColor = COLOR_WHITE;
-  //if((y >= ILI9341WIDTH) || (x >= ILI9341HEIGHT)) return;
-  //if((y + h - 1) >= ILI9341WIDTH)  h = ILI9341WIDTH  - y;
-  //if((x + w - 1) >= ILI9341HEIGHT)  w = ILI9341HEIGHT - x;
+  if (orientation == 0 || orientation == 1)
+  {
+	  int temp = width;
+	  width = height;
+	  height = temp;
+  }
 
-  setAddrWindow(y, x, y+h-1, x+w-1);
+  // Set start write position
+  setAddrWindow(x, y, x+width-1, y+height-1);
 
   digitalWrite(TFT_DC, HIGH);
   digitalWrite(TFT_CS, LOW);
-  bool direction = true;
   int position_index = 0;
-
-  if (orientation == 0)
+  
+  // Paint the object in the left or right orientation
+  if (orientation < 3 || clear)
   {
-     //Pixel paint the object
-     for (i = 0; i < width; i++)
+	 if (orientation == 1)
+	 {
+		 position_index = (width * height) - 1;
+	 }
+     for (i = 0; i < height; i++)
      {
-        for (j=0; j < height; j++)
-        {
-           if (clear)
-           {
-              currentColor = bg_color;
-           }
-           else
-           {
-              currentColor = image[position_index++];
-           }
-           hi = currentColor >> 8;
-           lo = currentColor;
-           SPI.transfer(hi);
-           SPI.transfer(lo);
-        }
-     }
-  }
-  else if (orientation == 1)
-  {
-	  position_index = (width * height) - 1;
-     //Pixel paint the object
-     for (i = 0; i < width; i++)
-     {
-        for (j=0; j < height; j++)
-        {
-           if (clear)
-           {
-              currentColor = bg_color;
-           }
-           else
-           {
-              currentColor = image[position_index--];
-           }
-           hi = currentColor >> 8;
-           lo = currentColor;
-           SPI.transfer(hi);
-           SPI.transfer(lo);
-        }
-     }
-  }
-  else if (orientation == 2)
-  {
-     //Pixel paint the object
-     for (i = 0; i < width; i++)
-     {
-		position_index = i;
-        for (j=0; j < height; j++)
+		if (orientation == 2)
+	    {
+		    position_index = i;
+	    }
+        for (j=0; j < width; j++)
         {
            if (clear)
            {
@@ -499,8 +462,23 @@ void ILI9341::display_image(int image[], int x, int y, int width, int height, in
            else
            {
               currentColor = image[position_index];
-			  position_index += width;
+			  if (orientation == 0)
+			  {
+			     position_index++;
+			  }
+			  else if (orientation == 1)
+			  {
+				  position_index--;
+			  }
+			  else if (orientation == 2)
+			  {
+				  position_index += height;
+			  }
            }
+		   if (currentColor == COLOR_WHITE)
+		   {
+			   currentColor = bg_color;
+		   }
            hi = currentColor >> 8;
            lo = currentColor;
            SPI.transfer(hi);
@@ -511,20 +489,17 @@ void ILI9341::display_image(int image[], int x, int y, int width, int height, in
   else if (orientation == 3)
   {
      //Pixel paint the object
-     for (i = width-1; i >= 0; i--)
+     for (i = height-1; i >= 0; i--)
      {
 		position_index = i;
-        for (j=0; j < height; j++)
+        for (j=0; j < width; j++)
         {
-           if (clear)
-           {
-              currentColor = bg_color;
-           }
-           else
-           {
-              currentColor = image[position_index];
-			  position_index += width;
-           }
+           currentColor = image[position_index];
+		   position_index += height;
+		   if (currentColor == COLOR_WHITE)
+		   {
+			   currentColor = bg_color;
+		   }
            hi = currentColor >> 8;
            lo = currentColor;
            SPI.transfer(hi);
@@ -533,7 +508,6 @@ void ILI9341::display_image(int image[], int x, int y, int width, int height, in
      }
   }
   digitalWrite(TFT_CS, HIGH);
-
 }
 
 

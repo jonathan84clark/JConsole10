@@ -19,7 +19,7 @@ Sprite::Sprite()
 /****************************************************
 * SPRITE CONSTRUCTOR
 ****************************************************/
-Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, bool inDestroyOnEdge, int inColor, ILI9341* inLcd)
+Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float inFriction, bool inUseGravity, bool inDestroyOnEdge, int inColor, int *inImage, ILI9341* inLcd)
 {
    position = inPosition;
    lcd = inLcd;
@@ -34,6 +34,7 @@ Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float 
    framesSinceXCollision = 0;
    framesSinceYCollision = 0;
    isAlive = true;
+   image = inImage;
 }
 
 /****************************************************
@@ -217,10 +218,24 @@ bool Sprite::move_sprite()
 
 void Sprite::draw()
 {
-   lcd->fillRect(position.y, position.x,  scale.y, scale.x, color);
+   if (image)
+   {
+      lcd->display_image(image, position.y, position.x, scale.y, scale.x, 2, 0);
+   }
+   else
+   {
+      lcd->fillRect(position.y, position.x,  scale.y, scale.x, color);
+   }
 }
 
 void Sprite::erase()
 {
-   lcd->fillRect(position.y, position.x, scale.y, scale.x, lcd->GetBgColor());
+   if (image)
+   {
+      lcd->display_image(image, position.y, position.x, scale.y, scale.x, 2, 1);
+   }
+   else
+   {
+      lcd->fillRect(position.y, position.x, scale.y, scale.x, lcd->GetBgColor());
+   }
 }
