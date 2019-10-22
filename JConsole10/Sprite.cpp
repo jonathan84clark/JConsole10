@@ -35,6 +35,7 @@ Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float 
    framesSinceYCollision = 0;
    isAlive = true;
    image = inImage;
+   orientation = 2;
 }
 
 /****************************************************
@@ -60,6 +61,14 @@ void Sprite::update(float delta_t)
       delta_t = delta_t * gravityScaler; // Apply a gravity scaler to scale it for the screen size
       float vf = vo + -9.81 * delta_t;
       velocity.y = vf;
+   }
+   if (velocity.x > 0.0)
+   {
+       orientation = RIGHT;
+   }
+   else if (velocity.x < 0.0)
+   {
+       orientation = LEFT;
    }
    move_sprite();
    update_friction();
@@ -220,7 +229,7 @@ void Sprite::draw()
 {
    if (image)
    {
-      lcd->display_image(image, position.y, position.x, scale.y, scale.x, 2, 0);
+      lcd->display_image(image, position.y, position.x, scale.y, scale.x, orientation, 0);
    }
    else
    {
@@ -232,7 +241,7 @@ void Sprite::erase()
 {
    if (image)
    {
-      lcd->display_image(image, position.y, position.x, scale.y, scale.x, 2, 1);
+      lcd->display_image(image, position.y, position.x, scale.y, scale.x, orientation, 1);
    }
    else
    {

@@ -23,12 +23,14 @@
  * Update: 10/19/2019, Added code to support a sprite image. Added the resistance x-wing sprite object
  * now the player can play the game with an x-wing.
  * Update: 10/21/2019, Pulled off the Debris game into it's own header and .cpp files for organization.
+ * Update: 10/21/2019, Made signficant changes. Added sprite orientation, added the blaster class
+ * cleaned up the game code and added comments, added a health bar and health to the game. Added multiple
+ * weapon shots. Adjusted the speed of the player's weapon.
  ****************************************************/
 #include "src/hal/ILI9341_SPI.h"
 #include "Sprite.h"
 #include "Vector2D.h"
 #include "src/hal/Controls.h"
-#include "UIBar.h"
 #include "Debris.h"
 #include <SPI.h>
 

@@ -12,6 +12,8 @@
 #include "src/hal/ILI9341_SPI.h"
 #include "Vector2D.h"
 
+enum Orientation {RIGHT=2, LEFT=3, UP=0, DOWN=1};
+
 class Sprite
 {
    public:
@@ -29,7 +31,9 @@ class Sprite
       void SetVelocity(Vector2D inVelocity) { velocity = inVelocity;}
       Vector2D GetVelocity() { return velocity;}
       Vector2D GetPosition() { return position;}
+      Vector2D GetScale() { return scale; }
       bool GetIsAlive() { return isAlive;}
+      int GetOrientation() { return orientation; }
    
    private:
 
@@ -54,6 +58,7 @@ class Sprite
       int framesSinceXCollision;
       int framesSinceYCollision;
       int color;
+      int orientation;
       int* image;
       ILI9341* lcd;
       
