@@ -134,8 +134,9 @@ class ILI9341
 	  // Setters / Mutators
 	  void SetTextSize(int inSize) { text_size = inSize;}
 	  void SetCursor(uint16_t x, uint16_t y) { x_cursor = x; y_cursor = y;}
-	  void SetTextColor(uint16_t inColor, uint16_t inBackgroundColor);
+	  void SetTextColor(uint16_t inColor, uint16_t inBackgroundColor) { color = inColor; background_color = inBackgroundColor; }
 	  void SetRotation(uint8_t r);
+      void SetTextAlignment(uint16_t alignment) { text_alignment = alignment; }
 	  void SetBgColor(uint16_t inColor) { bg_color = inColor; background_color = inColor; fillScreen(bg_color); }
 	  
 	  // Getters / Accessors
@@ -151,6 +152,7 @@ class ILI9341
       uint16_t x_cursor;
       uint16_t y_cursor;
       uint16_t indent_position;
+      uint16_t text_alignment;
 	  
 	  // Interface Functions
 	  void draw_char(unsigned char c);

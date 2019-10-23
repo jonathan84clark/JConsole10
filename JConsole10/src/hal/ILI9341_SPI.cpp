@@ -85,27 +85,27 @@ void ILI9341::draw_char(unsigned char c) {
 }
 
 /********************************************************
-* SET TEXT COLOR
-* DESCRIPTION: Sets the text color and background color
-**********************************************************/
-void ILI9341::SetTextColor(uint16_t inColor, uint16_t inBackgroundColor)
-{
-	color = inColor;
-	background_color = inBackgroundColor;
-}
-
-/********************************************************
 * PRINT
 * DESCRIPTION: The print function prints text to the LCD
 **********************************************************/
 void ILI9341::_print(String characters)
 {
+    uint16_t startXCursor = x_cursor;
 	for (int i = 0; i < characters.length(); i++)
 	{
       if (characters[i] == '\n')
       {
-         y_cursor -= 6*text_size + text_size + 1;
-         x_cursor = indent_position;
+         y_cursor -= 6*text_size + text_size + 4;
+         // Text aligned left
+         if (text_alignment == 0)
+         {
+            x_cursor = indent_position;
+         }
+         // Text aligned center
+         else if (text_alignment == 1)
+         {
+            x_cursor = startXCursor;
+         }       
       }
       else
       {

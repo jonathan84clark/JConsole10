@@ -54,6 +54,24 @@ COLOR_WHITE, COLOR_WHITE,  COLOR_BLACK,  COLOR_BLACK,  COLOR_BLACK,  COLOR_BLACK
 //UIBar health(newposition, true, 4, 40, COLOR_BLUE, COLOR_RED, &lcd);
 //health.update(0.8);
 
+void pause(ILI9341 *lcd, Controls *controls)
+{
+   unsigned long ms_ticks = 0;
+   unsigned long button_time = 0;
+   lcd->SetCursor(80, 210);
+   lcd->SetTextSize(4);
+   lcd->_print("Paused");
+   lcd->SetCursor(100, 150);
+   lcd->SetTextAlignment(1);
+   lcd->SetTextSize(2);
+   lcd->_print("Resume\nView Score\nExit");
+   for (;;)
+   {
+      ms_ticks = millis();
+      controls->UpdateButtons();
+   }
+}
+
 /********************************************************
 * DEBRIS
 * DESC: Contains the debris game, where the player can shoot

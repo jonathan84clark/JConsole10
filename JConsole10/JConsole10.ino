@@ -56,6 +56,7 @@ void setup() {
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
   debris(&lcd, &controls);
+  //pause(&lcd, &controls);
 }
 
 
