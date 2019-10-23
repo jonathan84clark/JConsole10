@@ -10,8 +10,8 @@
 #include "Controls.h"
 #include <Arduino.h>
 
-#define DEAD_ZONE 0.05
-#define NEG_DEAD_ZONE -0.05
+#define DEAD_ZONE 0.01
+#define NEG_DEAD_ZONE -0.01
 
 #define JOYSTICK_X A10
 #define JOYSTICK_Y A11
@@ -96,6 +96,20 @@ unsigned int Controls::Random(unsigned int max)
 }
 
 /**************************************************
+* UPDATE BUTTONS
+* DESCRIPTION: Updates the controls with the latest
+* button information.
+**************************************************/
+void Controls::UpdateButtons()
+{
+   buttons[0] = digitalRead(BTN0);
+   buttons[1] = digitalRead(BTN1);
+   buttons[2] = digitalRead(BTN2);
+   buttons[3] = digitalRead(BTN3);
+   buttons[4] = digitalRead(JOY_BTN);
+}
+
+/**************************************************
 * UPDATE
 * DESCRIPTION: Updates the controls with the latest
 * control information.
@@ -107,11 +121,7 @@ void Controls::Update(unsigned long ms_ticks)
 
    joystick.x = ApplyDeadZone(xValue);
    joystick.y = ApplyDeadZone(yValue);
-   buttons[0] = digitalRead(BTN0);
-   buttons[1] = digitalRead(BTN1);
-   buttons[2] = digitalRead(BTN2);
-   buttons[3] = digitalRead(BTN3);
-   buttons[4] = digitalRead(JOY_BTN);
+
    // Add a new random number to the random number array
    unsigned int randomValue = analogRead(CDS_CELL) + analogRead(LEFT_RIGHT_TILT) + analogRead(FORWARD_BACK_GYRO) + ms_ticks;
    if (randomValue != random_numbers[random_index])

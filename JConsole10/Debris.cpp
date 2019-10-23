@@ -67,6 +67,7 @@ void debris(ILI9341 *lcd, Controls *controls)
    unsigned long update_timer = 0;
    unsigned long block_gen_timer = 0;
    unsigned long shot_rof_timer = 0;
+   unsigned long score = 0;
    float health = 100.0;
    float max_health = health;
    Vector2D startBlockPos(300, 50);
@@ -77,21 +78,28 @@ void debris(ILI9341 *lcd, Controls *controls)
    int shotStartLoc = 0;
    player = Sprite(Vector2D(100, 75), Vector2D(XWING_WIDTH, XWING_HEIGHT), 0.0, 0.0, 0, false, 12, xWing, lcd);
    float delta_time;
-   UIBar healthBar(Vector2D(220, 210), false, 4, 40, COLOR_BLUE, COLOR_RED, lcd);
+   lcd->SetCursor(230, 230);
+   lcd->_print("Health");
+   UIBar healthBar(Vector2D(230, 210), false, 6, 70, COLOR_BLUE, COLOR_RED, lcd);
    healthBar.update(1.0);
+   lcd->SetCursor(5, 230);
+   String value = String(0);
+   lcd->_print("Score: ");
+   lcd->SetCursor(85, 230);
+   lcd->_print(value);
    
    for (;;)
    {
       ms_ticks = millis();
-      delta_time = ms_ticks - last_time;
-      controls->Update(ms_ticks);
+      controls->UpdateButtons();
       if (player_timer < ms_ticks)
       {
+         controls->Update(ms_ticks);
          player.SetVelocity(Vector2D(controls->joystick.x * 8.0, controls->joystick.y * 8.0));
          player_timer = ms_ticks + 200;
       }
       // Fire Button Pressed
-      if (shot_rof_timer < ms_ticks && controls->buttons[0])
+      if (shot_rof_timer < ms_ticks && controls->buttons[3])
       {
          // Circular queue here, its possible to run out of shots
          if (!shots[shotIndex].GetIsAlive())
@@ -126,6 +134,7 @@ void debris(ILI9341 *lcd, Controls *controls)
       // Auto Generate blocks when they are destroyed
       if (block_gen_timer < ms_ticks)
       {
+          controls->Update(ms_ticks);
           startBlockPos.y = controls->Random(300);
           if (startBlockPos.y > 180)
           {
@@ -150,6 +159,7 @@ void debris(ILI9341 *lcd, Controls *controls)
       // checking for collisions.
       if (update_timer < ms_ticks)
       {
+         delta_time = ms_ticks - last_time;
          float delta_time_sec = (float)delta_time;
          delta_time_sec = delta_time_sec / 1000.0;
          player.update(delta_time_sec);
@@ -165,6 +175,10 @@ void debris(ILI9341 *lcd, Controls *controls)
                   {
                       blocks[j].destroy();
                       shots[i].destroy();
+                      score++;
+                      String value = String(score);
+                      lcd->SetCursor(85, 230);
+                      lcd->_print(value);
                   }
                }
             }

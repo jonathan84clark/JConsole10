@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <stddef.h>
+#include <Arduino.h>
 #include <SPI.h>
 #include "glcdfont.cpp"
 #include "ILI9341_SPI.h"
@@ -84,35 +85,33 @@ void ILI9341::draw_char(unsigned char c) {
 }
 
 /********************************************************
+* SET TEXT COLOR
+* DESCRIPTION: Sets the text color and background color
+**********************************************************/
+void ILI9341::SetTextColor(uint16_t inColor, uint16_t inBackgroundColor)
+{
+	color = inColor;
+	background_color = inBackgroundColor;
+}
+
+/********************************************************
 * PRINT
 * DESCRIPTION: The print function prints text to the LCD
 **********************************************************/
-void ILI9341::_print(char *characters)
+void ILI9341::_print(String characters)
 {
-   while(*characters)
-   {
-      if (*characters == '\n')
+	for (int i = 0; i < characters.length(); i++)
+	{
+      if (characters[i] == '\n')
       {
          y_cursor -= 6*text_size + text_size + 1;
          x_cursor = indent_position;
       }
       else
       {
-         draw_char(*characters);
+         draw_char(characters[i]);
       }
-      characters++;
    }
-}
-
-/**************************************************
-* SET BG COLOR
-* DESCRIPTION: Sets the background color of the LCD and
-* fills the screen.
-**************************************************/
-void ILI9341::setBgColor(uint16_t inColor)
-{
-   bg_color = inColor;
-   fillScreen(bg_color);
 }
 
 /**************************************************
@@ -122,7 +121,7 @@ void ILI9341::setBgColor(uint16_t inColor)
 **************************************************/
 uint16_t ILI9341::GetPaletteColor(char index)
 {
-    return COLOR_WHITE;
+    return palette[index];
 }
 
 /**************************************************
@@ -272,7 +271,7 @@ void ILI9341::initialize(void)
    delay(120);
    writecommand(ILI9341_DISPON);    //Display on
 
-   setRotation(0);
+   SetRotation(0);
 }
 
 /**************************************************
@@ -319,7 +318,6 @@ void ILI9341::setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 **************************************************/
 void ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
-
    if((x < 0) ||(x >= ILI9341WIDTH) || (y < 0) || (y >= ILI9341HEIGHT)) return;
 
    setAddrWindow(x,y,x+1,y+1);
@@ -330,60 +328,6 @@ void ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color)
    SPI.transfer(color);
    digitalWrite(TFT_CS, HIGH);
 
-}
-
-/**************************************************
-* DRAW FAST V LINE
-**************************************************/
-void ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
-{
-
-  // Rudimentary clipping
-  if((x >= ILI9341WIDTH) || (y >= ILI9341HEIGHT)) return;
-
-  if((y+h-1) >= ILI9341HEIGHT)
-    h = ILI9341HEIGHT-y;
-
-  setAddrWindow(x, y, x, y+h-1);
-
-  uint8_t hi = color >> 8, lo = color;
-
-  digitalWrite(TFT_DC, HIGH);
-  digitalWrite(TFT_CS, LOW);
-
-  while (h--)
-  {
-    SPI.transfer(hi);
-    SPI.transfer(lo);
-  }
-  digitalWrite(TFT_CS, HIGH);
-}
-
-/**************************************************
-* DRAW FAST H LINE
-**************************************************/
-void ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color)
-{
-
-  // Rudimentary clipping
-  if((x >= ILI9341WIDTH) || (y >= ILI9341HEIGHT)) return;
-  if((x+w-1) >= ILI9341WIDTH)  w = ILI9341WIDTH-x;
-  setAddrWindow(x, y, x+w-1, y);
-
-  uint8_t hi = color >> 8, lo = color;
-  digitalWrite(TFT_DC, HIGH);
-  digitalWrite(TFT_CS, LOW);
-  while (w--)
-  {
-    SPI.transfer(hi);
-    SPI.transfer(lo);
-  }
-  digitalWrite(TFT_CS, HIGH);
-}
-
-void ILI9341::fillScreen(uint16_t color)
-{
-   fillRect(0, 0,  ILI9341WIDTH, ILI9341HEIGHT, color);
 }
 
 /**************************************************
@@ -523,7 +467,7 @@ void ILI9341::display_image(int image[], int x, int y, int width, int height, in
 * SET ROTATION
 * DESCRIPTION: Set the rotation of the LCD
 **************************************************/
-void ILI9341::setRotation(uint8_t m)
+void ILI9341::SetRotation(uint8_t m)
 {
   writecommand(ILI9341_MADCTL);
   uint8_t rotation = m % 4; // can't be higher than 3
@@ -542,104 +486,3 @@ void ILI9341::setRotation(uint8_t m)
      break;
   }
 }
-
-/**************************************************
-* INVERT DISPLAY
-* DESCRIPTION: Invert the colors on the LCD
-**************************************************/
-void ILI9341::invertDisplay(char i)
-{
-  writecommand(i ? ILI9341_INVON : ILI9341_INVOFF);
-}
-
-
-////////// stuff not actively being used, but kept for posterity
-
-/**************************************************
-* SPI READ
-* DESCRIPTION: Read spi data from the LCD
-**************************************************/
-uint8_t ILI9341::spiread(void)
-{
-   return SPI.transfer(0);
-}
-
-/**************************************************
-* READ DATA
-* DESCRIPTION: Read a single byte from the LCD.
-**************************************************/
-uint8_t ILI9341::readdata(void)
-{
-   //SET_DC;
-   //CLEAR_CS;
-   //uint8_t r = spiread();
-   //SET_CS;
-   return 0;
-}
-
-/**************************************************
-* READ COMMAND
-* DESCRIPTION: Read one of the LCD registers.
-**************************************************/
-uint8_t ILI9341::readcommand8(uint8_t c, uint8_t index)
-{
-   digitalWrite(TFT_DC, LOW);
-   digitalWrite(TFT_CS, LOW);
-   SPI.transfer(0xD9);  // woo sekret command?
-   digitalWrite(TFT_DC, HIGH);
-   SPI.transfer(0x10 + index);
-   digitalWrite(TFT_CS, HIGH);
-
-   digitalWrite(TFT_DC, LOW);
-   digitalWrite(TFT_CS, LOW);
-   SPI.transfer(c);
-
-   digitalWrite(TFT_DC, HIGH);
-   uint8_t r = spiread();
-   digitalWrite(TFT_CS, HIGH);
-
-   return r;
-}
-
-/**************************************************
-* READ COMMAND 16
-* DESCRIPTION: Reads 16 bits from the LCD
-**************************************************/
-uint16_t ILI9341::readcommand16(uint8_t c) 
-{
-   digitalWrite(TFT_DC, LOW);
-   digitalWrite(TFT_CS, LOW);
-
-   SPI.transfer(c);
-   uint16_t r = spiread();
-   r <<= 8;
-   r |= spiread();
-   digitalWrite(TFT_CS, HIGH);
-   
-   return r;
-}
-
- /**************************************************
-* READ COMMAND 32
-* DESCRIPTION: Reads 32 bits from the LCD
-**************************************************/
-uint32_t ILI9341::readcommand32(uint8_t c) 
-{
-   digitalWrite(TFT_DC, LOW);
-   digitalWrite(TFT_CS, LOW);
-   SPI.transfer(c);
-
-   //dummyclock();
-   //dummyclock();
-
-   uint32_t r = spiread();
-   r <<= 8;
-   r |= spiread();
-   r <<= 8;
-   r |= spiread();
-   r <<= 8;
-   r |= spiread();
-   digitalWrite(TFT_CS, HIGH);
-
-   return r;
- }

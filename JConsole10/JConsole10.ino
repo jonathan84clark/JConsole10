@@ -49,7 +49,7 @@ void setup() {
   SPI.begin();
   controls.Setup();
   lcd.initialize();
-  lcd.setBgColor(COLOR_GREENYELLOW);
+  lcd.SetBgColor(COLOR_GREENYELLOW);
   Serial.println("ILI9341 Test!"); 
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);

@@ -24,6 +24,7 @@ class Controls
       unsigned int random_numbers[NUM_RAND_NUMS];
       unsigned int random_index;
       unsigned int Random(unsigned int max);
+	  void UpdateButtons();
       void Setup();
 
    private:

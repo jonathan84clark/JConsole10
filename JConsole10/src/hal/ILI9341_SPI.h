@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <Arduino.h>
 
 #define ILI9341WIDTH  240
 #define ILI9341HEIGHT 320
@@ -120,38 +121,29 @@ class ILI9341
 {
    public:
       ILI9341();
-      
-      uint16_t GetBgColor(void) { return bg_color;}
-      void _print(char *characters);
-      void draw_char(unsigned char c);
-      
-      
+
+	  // System Draw Functions
+	  void initialize(void);
+      void fillScreen(uint16_t color) { fillRect(0, 0,  ILI9341WIDTH, ILI9341HEIGHT, color); }
       void drawPixel(int16_t x, int16_t y, uint16_t color);
-      void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
-      void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
       void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
-      void setRotation(uint8_t r);
-      void invertDisplay(char i);
+      void invertDisplay(char i) { writecommand(i ? ILI9341_INVON : ILI9341_INVOFF); }
       void display_image(int image[], int x, int y, int width, int height, int orientation, uint8_t clear);
-
-      /* These are not for current use, 8-bit protocol only! */
-      uint8_t readdata(void);
-      uint8_t  readcommand8(uint8_t reg, uint8_t index);
-      uint16_t readcommand16(uint8_t);
-      uint32_t readcommand32(uint8_t);
-
-      uint8_t spiwrite(uint8_t data);
-      void writecommand(uint8_t c);
-      void writedata(uint8_t d);
-      uint8_t spiread(void);
+	  void _print(String characters);
+	  
+	  // Setters / Mutators
+	  void SetTextSize(int inSize) { text_size = inSize;}
+	  void SetCursor(uint16_t x, uint16_t y) { x_cursor = x; y_cursor = y;}
+	  void SetTextColor(uint16_t inColor, uint16_t inBackgroundColor);
+	  void SetRotation(uint8_t r);
+	  void SetBgColor(uint16_t inColor) { bg_color = inColor; background_color = inColor; fillScreen(bg_color); }
+	  
+	  // Getters / Accessors
       uint16_t GetPaletteColor(char index);
-      void setBgColor(uint16_t inColor);
-      void initialize(void);
-      void fillScreen(uint16_t color);
+	  uint16_t GetBgColor(void) { return bg_color;}
 
    private:
       uint16_t bg_color;
-      void setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
       int text_size;
       uint16_t color;
       uint16_t background_color;
@@ -159,6 +151,12 @@ class ILI9341
       uint16_t x_cursor;
       uint16_t y_cursor;
       uint16_t indent_position;
+	  
+	  // Interface Functions
+	  void draw_char(unsigned char c);
+	  void writecommand(uint8_t c);
+      void writedata(uint8_t d);
+      void setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 };
 
 #endif
