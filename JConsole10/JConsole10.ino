@@ -26,6 +26,7 @@
  * Update: 10/21/2019, Made signficant changes. Added sprite orientation, added the blaster class
  * cleaned up the game code and added comments, added a health bar and health to the game. Added multiple
  * weapon shots. Adjusted the speed of the player's weapon.
+ * Update: 10/24/2019, Added the main JConsole menu. Fixed issues with switching between different screens
  ****************************************************/
 #include "src/hal/ILI9341_SPI.h"
 #include "Sprite.h"
@@ -41,6 +42,84 @@
 ILI9341 lcd;
 Controls controls;
 
+void main_menu(ILI9341 *lcd, Controls *controls)
+{
+   unsigned long ms_ticks = 0;
+   unsigned long button_time = 0;
+   unsigned long joystick_time = 0;
+   int selection = 0;
+   bool selectionChange = false;
+   float lastJoystickYPos = 0.0;
+   lcd->SetCursor(40, 210);
+   lcd->SetTextSize(4);
+   lcd->_print("JConsole 10");
+   lcd->SetCursor(100, 150);
+   lcd->SetTextAlignment(1);
+   lcd->SetTextSize(2);
+   lcd->_print("Debris\nInfo");
+   Sprite selectBlock(Vector2D(85, 140), Vector2D(10, 10), 0.0, 0.0, 0, true, 12, 0, lcd);
+   for (;;)
+   {
+      ms_ticks = millis();
+      controls->UpdateButtons();
+      controls->Update(ms_ticks);
+      if (button_time < ms_ticks && controls->buttons[3])
+      {
+        if (selection == 0)
+        {
+            debris(lcd, controls);
+            lcd->SetBgColor(COLOR_GREENYELLOW);
+            lcd->SetCursor(40, 210);
+            lcd->SetTextSize(4);
+            lcd->_print("JConsole 10");
+            lcd->SetCursor(100, 150);
+            lcd->SetTextAlignment(1);
+            lcd->SetTextSize(2);
+            lcd->_print("Debris\nInfo");
+            Vector2D newPosition = selectBlock.GetPosition();
+            newPosition.y = 140.0 + (selection * -18.0);
+            selectBlock.SetPosition(newPosition);
+        }
+        else if (selection == 1)
+        {
+           
+        }
+        button_time = ms_ticks = 200;
+      }
+      // Joystick Down Move
+      if (joystick_time < ms_ticks && controls->joystick.y < -0.5 && lastJoystickYPos >= -0.5)
+      {
+          selection++;
+          if (selection == 2)
+          {
+              selection = 0;
+          }
+          selectionChange = true;
+          joystick_time = ms_ticks + 200;
+         
+      }
+      // Joystick Up Move
+      else if (joystick_time < ms_ticks && controls->joystick.y > 0.5 && lastJoystickYPos <= 0.5)
+      {
+          selection--;
+          if (selection == -1)
+          {
+              selection = 1;
+          }
+          selectionChange = true;
+          joystick_time = ms_ticks + 200;
+      }
+      // Calculate the new cursor position
+      if (selectionChange)
+      {
+         selectionChange = false;
+         Vector2D newPosition = selectBlock.GetPosition();
+         newPosition.y = 140.0 + (selection * -18.0);
+         selectBlock.SetPosition(newPosition);
+      }
+      lastJoystickYPos = controls->joystick.y;
+   }
+}
 
 void setup() {
 
@@ -55,8 +134,7 @@ void setup() {
   digitalWrite(TFT_LED, HIGH);
   pinMode(SUPER_WHITE_LED, OUTPUT);
   digitalWrite(SUPER_WHITE_LED, LOW);
-  debris(&lcd, &controls);
-  //pause(&lcd, &controls);
+  main_menu(&lcd, &controls);
 }
 
 

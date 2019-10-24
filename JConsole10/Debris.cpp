@@ -133,6 +133,7 @@ int pause(ILI9341 *lcd, Controls *controls)
 ********************************************************/
 void debris(ILI9341 *lcd, Controls *controls)
 {
+   lcd->SetBgColor(COLOR_SKYBLUE);
    unsigned long ms_ticks = 0;
    unsigned long player_timer = 0;
    unsigned long last_time = 0;
@@ -173,7 +174,21 @@ void debris(ILI9341 *lcd, Controls *controls)
       }
       if (button_debounce < ms_ticks && controls->buttons[4])
       {
-         pause(lcd, controls);
+          if (pause(lcd, controls) == 2)
+          {
+              return; // Exit the game
+          }
+          lcd->SetBgColor(COLOR_SKYBLUE);
+          lcd->SetCursor(230, 230);
+          lcd->_print("Health");
+          healthBar.update(health/max_health);
+          lcd->SetCursor(5, 230);
+          String value = String(score);
+          lcd->_print("Score: ");
+          lcd->SetCursor(85, 230);
+          lcd->_print(value);
+          player.draw();
+          
       }
       // Fire Button Pressed
       if (shot_rof_timer < ms_ticks && controls->buttons[3])
