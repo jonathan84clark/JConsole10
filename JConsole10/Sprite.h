@@ -27,6 +27,8 @@ class Sprite
       void destroy() { isAlive = false; erase();}
       virtual void OnCollisionEnter(Sprite* other);
 
+      void SetPosition(Vector2D inPosition) { erase(); position = inPosition; draw(); };
+
       // Accessors and Mutators
       void SetVelocity(Vector2D inVelocity) { velocity = inVelocity;}
       Vector2D GetVelocity() { return velocity;}

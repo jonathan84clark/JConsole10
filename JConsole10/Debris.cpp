@@ -54,10 +54,18 @@ COLOR_WHITE, COLOR_WHITE,  COLOR_BLACK,  COLOR_BLACK,  COLOR_BLACK,  COLOR_BLACK
 //UIBar health(newposition, true, 4, 40, COLOR_BLUE, COLOR_RED, &lcd);
 //health.update(0.8);
 
-void pause(ILI9341 *lcd, Controls *controls)
+/***************************************************
+* PAUSE
+* DESC: Handles pausing the game. 
+***************************************************/
+int pause(ILI9341 *lcd, Controls *controls)
 {
    unsigned long ms_ticks = 0;
    unsigned long button_time = 0;
+   unsigned long joystick_time = 0;
+   int selection = 0;
+   bool selectionChange = false;
+   float lastJoystickYPos = 0.0;
    lcd->SetCursor(80, 210);
    lcd->SetTextSize(4);
    lcd->_print("Paused");
@@ -65,10 +73,56 @@ void pause(ILI9341 *lcd, Controls *controls)
    lcd->SetTextAlignment(1);
    lcd->SetTextSize(2);
    lcd->_print("Resume\nView Score\nExit");
+   Sprite selectBlock(Vector2D(85, 140), Vector2D(10, 10), 0.0, 0.0, 0, true, 12, 0, lcd);
    for (;;)
    {
       ms_ticks = millis();
       controls->UpdateButtons();
+      controls->Update(ms_ticks);
+      if (button_time < ms_ticks && controls->buttons[3])
+      {
+        if (selection == 1)
+        {
+           // display score
+        }
+        else
+        {
+           return selection;
+        }
+        button_time = ms_ticks = 200;
+      }
+      // Joystick Down Move
+      if (joystick_time < ms_ticks && controls->joystick.y < -0.5 && lastJoystickYPos >= -0.5)
+      {
+          selection++;
+          if (selection == 3)
+          {
+              selection = 0;
+          }
+          selectionChange = true;
+          joystick_time = ms_ticks + 200;
+         
+      }
+      // Joystick Up Move
+      else if (joystick_time < ms_ticks && controls->joystick.y > 0.5 && lastJoystickYPos <= 0.5)
+      {
+          selection--;
+          if (selection == -1)
+          {
+              selection = 2;
+          }
+          selectionChange = true;
+          joystick_time = ms_ticks + 200;
+      }
+      // Calculate the new cursor position
+      if (selectionChange)
+      {
+         selectionChange = false;
+         Vector2D newPosition = selectBlock.GetPosition();
+         newPosition.y = 140.0 + (selection * -18.0);
+         selectBlock.SetPosition(newPosition);
+      }
+      lastJoystickYPos = controls->joystick.y;
    }
 }
 
@@ -85,6 +139,7 @@ void debris(ILI9341 *lcd, Controls *controls)
    unsigned long update_timer = 0;
    unsigned long block_gen_timer = 0;
    unsigned long shot_rof_timer = 0;
+   unsigned long button_debounce = 0;
    unsigned long score = 0;
    float health = 100.0;
    float max_health = health;
@@ -115,6 +170,10 @@ void debris(ILI9341 *lcd, Controls *controls)
          controls->Update(ms_ticks);
          player.SetVelocity(Vector2D(controls->joystick.x * 8.0, controls->joystick.y * 8.0));
          player_timer = ms_ticks + 200;
+      }
+      if (button_debounce < ms_ticks && controls->buttons[4])
+      {
+         pause(lcd, controls);
       }
       // Fire Button Pressed
       if (shot_rof_timer < ms_ticks && controls->buttons[3])

@@ -36,6 +36,7 @@ Sprite::Sprite(Vector2D inPosition, Vector2D inScale, float inBounciness, float 
    isAlive = true;
    image = inImage;
    orientation = 2;
+   draw();
 }
 
 /****************************************************

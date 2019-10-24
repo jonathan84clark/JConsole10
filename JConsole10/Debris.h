@@ -9,4 +9,4 @@
 #include "Vector2D.h"
 
 void debris(ILI9341 *lcd, Controls *controls);
-void pause(ILI9341 *lcd, Controls *controls);
+int pause(ILI9341 *lcd, Controls *controls);
